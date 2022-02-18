@@ -1,0 +1,19 @@
+Table 4: Impact of city shape on wages							
+		(1)	(2)	(3)	(4)	(5)	(6)
+		IV	OLS	IV	OLS	IV	OLS
+							
+VARIABLES	LABELS	2010-1992	2010-1992	2010-1992	2010-1992	2010-1992	2010-1992
+							
+d_km_9210	D Shape, km	0.0364	0.0336**	0.0728+	0.0466***	0.0562*	0.0349**
+		(0.0354)	(0.0132)	(0.0470)	(0.0154)	(0.0293)	(0.0150)
+log_area_polyg_km_9210	D Log area	-1.057	-0.0787	0.0542	-0.0371	-0.418	-0.0668
+		(0.944)	(0.0833)	(0.368)	(0.130)	(0.435)	(0.101)
+							
+Observations		183	183	80	80	145	145
+AP F stat shape		13.86		10.21		10.4	
+AP F stat area		1.94		3.76		3.1	
+KP test stat		1.67		1.76		2.28	
+Avg. yearly wage 1992		72	72	72	72	72	72
+Avg. yearly wage 2010		187	187	193	193	187	187
+Robust standard errors in parentheses							
+*** p<0.01, ** p<0.05, * p<0.1, + p<0.15							

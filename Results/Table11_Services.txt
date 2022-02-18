@@ -1,0 +1,18 @@
+Table 11: Impact of city shape on public services									
+		(1)	(2)	(3)	(4)	(5)	(6)	(7)	(8)
+		A. Electricity	A. Electricity	A. Electricity	A. Electricity	B. Tap	B. Tap	B. Tap	B. Tap
+		D Log nr households	D Log nr households	D Log share households	D Log share households	D Log nr households	D Log nr households	D Log share households	D Log share households
+		2011-1991	2011-1991	2011-1991	2011-1991	2011-1991	2011-1991	2011-1991	2011-1991
+VARIABLES	LABELS	IV	OLS	IV	OLS	IV	OLS	IV	OLS
+									
+d_km_9210	D Shape, km	0.229	0.0741***	0.0268	-0.00279	0.185	0.0815***	-0.0167	0.00459
+		(0.152)	(0.0103)	(0.0249)	(0.00227)	(0.113)	(0.0156)	(0.0380)	(0.0122)
+log_area_polyg_km_9210	D Log area	1.685	-0.0948*	0.340	0.0398**	1.427	-0.176**	0.0823	-0.0409
+		(1.789)	(0.0544)	(0.311)	(0.0160)	(1.517)	(0.0716)	(0.467)	(0.0527)
+									
+Observations		201	201	201	201	201	201	201	201
+AP F stat shape		8.88		8.88		8.88		8.88	
+AP F stat area		2.49		2.49		2.49		2.49	
+KP test stat		1.77		1.77		1.77		1.77	
+Robust standard errors in parentheses									
+*** p<0.01, ** p<0.05, * p<0.1									

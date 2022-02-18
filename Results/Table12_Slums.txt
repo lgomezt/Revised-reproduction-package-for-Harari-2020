@@ -1,0 +1,17 @@
+Table 12: Impact of city shape on slum population					
+		(1)	(2)	(3)	(4)
+		D Log slum population	D Log slum population	D Log slum population share	D Log slum population share
+		2011-1981	2011-1981	2011-1981	2011-1981
+VARIABLES	LABELS	IV	OLS	IV	OLS
+					
+d_km_5010	D Shape, km	-0.154*	-0.0387**	-0.167**	-0.0502***
+		(0.0798)	(0.0149)	(0.0823)	(0.0143)
+log_area_polyg_km_5010	D Area, km	0.651	0.0378	0.702	-0.0614
+		(0.760)	(0.107)	(0.757)	(0.103)
+					
+Observations		200	200	200	200
+AP F stat shape		15.98		15.98	
+AP F stat area		4.08		4.08	
+KP test stat		6.17		6.17	
+Robust standard errors in parentheses					
+*** p<0.01, ** p<0.05, * p<0.1, + p<0.15					

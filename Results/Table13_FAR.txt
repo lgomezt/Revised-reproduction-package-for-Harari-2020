@@ -1,0 +1,20 @@
+Table 13: Impact of FARs on city shape			
+		(1)	(2)
+		OLS	OLS
+		Shape	Log area
+VARIABLES	LABELS	km	km2
+			
+log_projected_pop	Log projected historical population	2.995	1.981**
+		(2.755)	(0.788)
+area_instr_x_FAR	Log projected population x FAR	-1.975*	-0.705**
+		(1.023)	(0.319)
+r1_relev_d_cls_km	Potential shape, km	0.158	-0.184
+		(1.182)	(0.232)
+shape_instr_x_FAR	Potential shape, km x FAR	0.667	0.137
+		(0.487)	(0.107)
+			
+Observations		1,182	1,182
+City FE		Y	Y
+Year FE		Y	Y
+Robust standard errors in parentheses			
+*** p<0.01, ** p<0.05, * p<0.1, + p<0.15			

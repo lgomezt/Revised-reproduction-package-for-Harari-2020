@@ -1,0 +1,71 @@
+-----------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\
+> Plan C. Economía\ReplicationFolder_Main\Out\/Table1PanelB_SumStatsLD.log
+  log type:  text
+ opened on:  18 Feb 2022, 14:47:05
+
+.         di "year = 1950" 
+year = 1950
+
+.         eststo year1: estpost tabstat `mylist' if year==1950, stat(mean sd count) columns(statistics)
+
+Summary statistics: mean sd count
+     for variables: area_polyg_km disconnect_km r1_relev_disconnect_cls_km TOTAL_pop_all
+
+             |   e(mean)      e(sd)   e(count) 
+-------------+---------------------------------
+area_polyg~m |  3.742909   7.215859        351 
+disconn~t_km |  1.011548   .7089442        351 
+r1_relev_d~m |  1.376396   .9909604        351 
+TOTAL_pop_~l |  106806.6   325337.7        351 
+
+.                 
+.         di "year = 2010" 
+year = 2010
+
+.         eststo year2: estpost tabstat `mylist' if year==2010, stat(mean sd count) columns(statistics) listwise
+
+Summary statistics: mean sd count
+     for variables: area_polyg_km disconnect_km r1_relev_disconnect_cls_km TOTAL_pop_all
+
+             |   e(mean)      e(sd)   e(count) 
+-------------+---------------------------------
+area_polyg~m |  117.9801   304.1491        351 
+disconn~t_km |   4.71438      4.236        351 
+r1_relev_d~m |    3.9846   2.298111        351 
+TOTAL_pop_~l |  657420.6    1968436        351 
+
+. log close
+      name:  <unnamed>
+       log:  C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\
+> Plan C. Economía\ReplicationFolder_Main\Out\/Table1PanelB_SumStatsLD.log
+  log type:  text
+ closed on:  18 Feb 2022, 14:47:05
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\
+> Plan C. Economía\ReplicationFolder_Main\Out\/Table1PanelB_SumStatsLD.log
+  log type:  text
+ opened on:  18 Feb 2022, 14:47:05
+
+.         tabstat *5010, stat(count mean median sd min max) save
+
+   stats |  are~5010  dis~5010  r1_~5010  TOT~5010
+---------+----------------------------------------
+       N |       351       351       351       351
+    mean |  114.2372  3.702831  2.608204    550614
+     p50 |  35.93797  2.504786  2.154097    145479
+      sd |  298.6361   3.80966  1.778995   1703455
+     min |  -2.10675 -.4959124         0      6379
+     max |  3936.263  33.61594  14.59243  2.06e+07
+--------------------------------------------------
+
+. log close 
+      name:  <unnamed>
+       log:  C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\
+> Plan C. Economía\ReplicationFolder_Main\Out\/Table1PanelB_SumStatsLD.log
+  log type:  text
+ closed on:  18 Feb 2022, 14:47:05
+-----------------------------------------------------------------------------------------------------------------
