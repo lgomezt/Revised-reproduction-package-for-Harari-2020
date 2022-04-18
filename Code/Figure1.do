@@ -8,10 +8,10 @@ set matsize 9000
 *=================================================================================================*
 ** Set up
 *=================================================================================================*
-	
-global resultsfolder 	".\Out\"
-global datafoldernew 	".\Data\"
-global logfolder 		".\Log"
+cd "C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\Plan C. Economía"
+global resultsfolder 	".\Revised reproduction package for Harari, 2020\Out\"
+global datafoldernew 	".\ReplicationFolder_Main\Data\"
+global logfolder 		".\ReplicationFolder_Main\Log"
 
 log using "${logfolder}\Figure1_Lucas.log", replace 
 
@@ -33,6 +33,7 @@ keep spin_km range_km remoteness_km disconnect_km spin_N_km range_N_km remotenes
 
 gen NoN_EACradius = sqrt(area_polyg_km/_pi)
 gen Norm_EACradius = NoN_EACradius 
+
 foreach var of varlist spin* range* remoteness* disconnect* { 
 	local stem = substr("`var'",1, strpos("`var'","_")-1)
 	if strpos("`var'", "_N_km")>0{
@@ -42,6 +43,7 @@ foreach var of varlist spin* range* remoteness* disconnect* {
 		ren `var' NoN_`stem'
 	}
 }
+
 drop area_polyg_km 	
 reshape long NoN_ Norm_, i(id) j(metric) string
 label var metric "Shape metric"
@@ -74,7 +76,7 @@ rename Norm_K Normalized_Kolkata
 rename NoN_rescale_B NonNormMetric_Bangalore
 rename Norm_B Normalized_Bangalore
 
-export excel using "$resultsfolder\Figure1.xls", sheetreplace firstrow(variables)
+export excel using "$resultsfolder\Figure1(Stata).xls", sheetreplace firstrow(variables)
 
 
 log close 
