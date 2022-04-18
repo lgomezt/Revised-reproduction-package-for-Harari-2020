@@ -9,6 +9,7 @@ set matsize 9000
 ** Set up
 *=================================================================================================*
 cd "C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\Plan C. Economía"
+
 global resultsfolder 	".\Revised reproduction package for Harari, 2020\Out\"
 global datafoldernew 	".\ReplicationFolder_Main\Data\"
 global logfolder 		".\ReplicationFolder_Main\Log"
