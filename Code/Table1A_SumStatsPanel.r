@@ -1,5 +1,8 @@
 # This script replicate the Table 1, Panel A, Descriptive statistics, Panel 
-# Table 1: Summary statistics for city area and shape. Panel A. 1950, 1992–2010 
+# Panel A reports descriptive statistics from the 351 cities in the main 
+# estimation sample, in all years for which  data is available. City area, 
+# shape, and potential shape are observable in years 1950 and 1992–2010. City 
+# population is available for census years 1951, 1991, 2001, and 2011
 
 # Delete all variables. Is the same as "clear all" in Stata
 rm(list = ls())
