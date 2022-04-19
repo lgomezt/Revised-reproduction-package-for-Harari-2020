@@ -116,6 +116,25 @@ governance, urban growth occurring along transit corridors, and the tendency of
 cities to expand into less favorable terrain.
 """
 
+# Explanation of instruments
+"""
+The author instrument actual shape of the city at given time with the potential 
+shape the city can have. The potential shape is estimated using the geographic 
+constraints that each city faces at that stage of its predicted growth.
+
+More concretly, she used the largest contiguous patch of developable land. It is
+land not occupied by a water body nor by steep terrain, within a given predicted
+radius around each city. This contiguous patch is denoted as 'potential footprint'.
+
+She computes the shape indicator of the potential footprint and use it as an 
+instrument for the shape of the actual urban footprint. What gives time 
+variation to this instrument is the fact that the predicted radius is time-varying,
+and  expands over time based on a mechanical model for city expansion. 
+
+The reason why she uses predicted and not the actual growth is due endogeneity. 
+However, the author do not report the results of her predictions in the paper.
+"""
+
 # Export results
 stargazer(iv2, ols2, type = "text", 
           title = "Table 3: Impact of city shape on population",
