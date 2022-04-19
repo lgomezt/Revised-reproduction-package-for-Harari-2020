@@ -1,0 +1,16 @@
+Table 3: Impact of city shape on population			
+		(1)	(2)
+		IV	OLS
+VARIABLES	LABELS	Log Pop D2010-1950	Log Pop D2010-1950
+			
+d_km_5010	D Shape, km	-0.0964**	0.0222***
+		(0.0439)	(0.00721)
+log_area_polyg_km_5010	D Log area	0.851***	0.213***
+		(0.238)	(0.0338)
+			
+Observations		351	351
+AP F stat shape		27.51	
+AP F stat area		9.14	
+KP test stat		12.86	
+Robust standard errors in parentheses			
+*** p<0.01, ** p<0.05, * p<0.1			

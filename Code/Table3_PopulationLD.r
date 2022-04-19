@@ -79,6 +79,7 @@ ols <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff +
               log_area_polyg_km_diff, data = df2)
 ols2 <- coeftest(ols, vcov. = vcovHC(ols, type = "HC0"), 
                 cluster = id)
+
 # Interpretation of the results
 """
 In equilibrium, faster growing cities are cities that grow into more disconnected
@@ -87,3 +88,24 @@ shapes. A 1% increase in population is associated with a deterioration in shape 
 governance, urban growth occurring along transit corridors, and the tendency of
 cities to expand into less favorable terrain.
 """
+
+stargazer(iv2, ols2, type = "text", 
+          title = "Table 3: Impact of city shape on population",
+          column.labels = c("IV", "OLS"),
+          covariate.labels = c("D Shape, km", "D Log area"),
+          dep.var.labels = c("Log Pop D2010-1950", "Log Pop D2010-1950"),
+          omit = c("Constant"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", ols$n, ols$n)), 
+          out = paste0(path_output, "Table3_ShapeOnPopulation(R).txt"))
+
+
+stargazer(iv2, ols2, type = "latex", 
+          title = "Table 3: Impact of city shape on population",
+          column.labels = c("IV", "OLS"),
+          covariate.labels = c("D Shape, km", "D Log area"),
+          dep.var.labels = c("Log Pop D2010-1950", "Log Pop D2010-1950"),
+          omit = c("Constant"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", ols$n, ols$n)),
+          out = paste0(path_output, "Table3_ShapeOnPopulation(R).tex"))
