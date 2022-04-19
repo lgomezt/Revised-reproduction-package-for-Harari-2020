@@ -13,6 +13,8 @@ library(tidyr) # To reshape dataframes
 library(writexl) # To export dataframes to Excel
 library(tibble) # Rownames to columns
 library(stargazer) # Export to latex
+library(lmtest) # Cluster standard errors
+library(sandwich) # Robust covariance matrix estimators
 
 # Define the paths to import data, call scripts or save outputs 
 path_script <- getActiveDocumentContext()$path # Automatich path :D
@@ -55,5 +57,33 @@ for (var in variables) {
   df2[, vardiff] = df2[, var2010] - df2[, var1950]
 } 
 
+# Regression to get first stage. F and KP stat
+
+# 1. Comment --------------------------------------------------------------
+"""
+The author is going to estimate the effect of the shape of the city on the 
+growth of the population. However, due to the endogeneity of the shape of the 
+city, she is going to instrument its regressor with some topographic data.
+
+As IV has two main conditions to be used (exlusion restriction and relevance
+condition), this part of the paper is focused to show the relevance of the 
+instrument. Most of the test are based on the global significance of the first
+stage of the IV (using F-Statistic) and the individual significance of the
+instruments.
+
+Here we are going to reproduce the first stage of the paper. We are focused in
+calculate the Angrist-Pischke and Kleibergen-Paap F-statistics.
+
+Angrist and Pischke propose an first-stage-statistic for the case of multiple 
+endogenous variables by reformulating the estimation problem to a one-variable 
+model after replacing the other endogenous variables with their reduced form 
+predictions. A good explanaiton can be found here:
+https://www.sciencedirect.com/science/article/pii/S0304407615001736#br000005
+"""
+
+# First stage for Shape
+f1_shape <- lm(disconnect_km_diff ~ r1_relev_disconnect_cls_km_diff + 
+                 log_projected_pop_diff, data = df2)
+f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC0"), cluster = id)
 
 
