@@ -13,9 +13,11 @@ set matsize 9000
 ************************************ Paths ***************************************
 **********************************************************************************
 
-global resultsfolder 	".\Out"
-global datafoldernew 	".\Data"
-global logfolder 		".\Log"
+cd "C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\Plan C. Economía"
+
+global resultsfolder 	".\Revised reproduction package for Harari, 2020\Out\"
+global datafoldernew 	".\ReplicationFolder_Main\Data\"
+global logfolder 		".\ReplicationFolder_Main\Log"
 
 log using "${logfolder}\Table2_FSPanel.log", replace 
 **********************************************************************************
@@ -75,12 +77,12 @@ local kptest = substr("`kptest'",1,strpos("`kptest'",".")+2)
 **************************** First stage for shape *****************************
 
 quie reg `y'_km log_projected_pop r1_relev_`y'_cls_km i.year i.id ,  cluster(id)
-outreg2 using "$resultsfolder/Table2_Panel_FirstStage.xls", title(Table 2, columns 3 and 4: First stage, panel) nor2 nocons addtext(AP F stat shape, "`APF_`y'_km'", AP F stat area, "`APF_log_area_polyg_km'" , KP F test stat, "`kptest'", City FE, Y, Year FE, Y) ctitle (OLS, "Shape, km") label(insert) keep(r1_relev_`y'_cls_km log_projected_pop r1_relev_`y'_cls_km ) replace
+outreg2 using "$resultsfolder/Table2_Panel_FirstStage(Stata).xls", title(Table 2, columns 3 and 4: First stage, panel) nor2 nocons addtext(AP F stat shape, "`APF_`y'_km'", AP F stat area, "`APF_log_area_polyg_km'" , KP F test stat, "`kptest'", City FE, Y, Year FE, Y) ctitle (OLS, "Shape, km") label(insert) keep(r1_relev_`y'_cls_km log_projected_pop r1_relev_`y'_cls_km ) replace
 
 **************************** First stage for area *****************************
 
 quie reg log_area_polyg_km log_projected_pop r1_relev_`y'_cls_km i.year i.id,  cluster(id)
-outreg2 using "$resultsfolder/Table2_Panel_FirstStage.xls", nor2 nocons addtext(AP F stat shape, "`APF_`y'_km'", AP F stat area, "`APF_log_area_polyg_km'" , KP F test stat, "`kptest'", City FE, Y, Year FE, Y) ctitle (OLS, "Log area, km") label(insert) keep(r1_relev_`y'_cls_km log_projected_pop r1_relev_`y'_cls_km ) append
+outreg2 using "$resultsfolder/Table2_Panel_FirstStage(Stata).xls", nor2 nocons addtext(AP F stat shape, "`APF_`y'_km'", AP F stat area, "`APF_log_area_polyg_km'" , KP F test stat, "`kptest'", City FE, Y, Year FE, Y) ctitle (OLS, "Log area, km") label(insert) keep(r1_relev_`y'_cls_km log_projected_pop r1_relev_`y'_cls_km ) append
 
 log close 
 * end
