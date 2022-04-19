@@ -3,6 +3,7 @@
 # instrument and to projected historical population.
 
 # THIS SCRIPT IS FOR THE FIRST STAGE FOR PANEL (COLUMNS 3 & 4)
+
 """
 Cols. 3 and 4 report first stage F stats for the full sample of city-years 
 for which shape and area are observed. This includes years for which there is no 
@@ -42,34 +43,37 @@ df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
 # Filter for the 351 cities sampled by the author for their main analysis.
 df2 = df[df["insample_IV_5010"] == 1,]
 
-# Reshape the data: long to wide
-df2 <- df2 %>%
-  select(id, year, area_polyg_km, disconnect_N_km, disconnect_km,
-         log_projected_pop, r1_relev_disconnect_cls_km, log_area_polyg_km, 
-         log_TOTAL_pop_all, dens_core_all, TOTAL_pop_all) %>%
-  pivot_wider(id_cols = id, names_from = year, 
-              values_from = -all_of(c("id", "year")))
+# First stage for Shape (Panel)
+temp = df2[,"disconnect_km"]*2
+f1_shape <- lm(disconnect_km ~ factor(id) + factor(year) + 
+                 log_projected_pop + r1_relev_disconnect_cls_km, data = df2, 
+               subset = !is.na(temp))
+f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC1"), 
+                      cluster = id)
 
-# Generate log difference vars
+# First stage for Area (Panel)
+f1_area <- lm(log_area_polyg_km ~ factor(id) + factor(year) + 
+                log_projected_pop + r1_relev_disconnect_cls_km, data = df2, 
+              subset = !is.na(temp))
+f1_area2 <- coeftest(f1_area, vcov. = vcovHC(f1_area, type = "HC1"), 
+                     cluster = id)
 
-# List of variables to calculate the difference
-variables <- c("area_polyg_km", "disconnect_N_km", "disconnect_km",
-               "log_projected_pop", "r1_relev_disconnect_cls_km", 
-               "log_area_polyg_km", "log_TOTAL_pop_all", "dens_core_all", 
-               "TOTAL_pop_all")
-var = variables[1]
+stargazer(f1_shape2, f1_area2, type = "text", 
+          title = "Table 2 (columns 3 and 4): First stage panel",
+          column.labels = c("OLS", "OLS"),
+          dep.var.labels = c("Shape, km", "Log area, km"),
+          covariate.labels = c("Log projected historical population", "Potential shape, km"),
+          omit = c("Constant", "id", "year"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", sum(!is.na(temp)), sum(!is.na(temp)))), 
+          out = paste0(path_output, "Table2_Panel_FirstStage(R).txt"))
 
-for (var in variables) {
-  # Names of the variables
-  var2010 <- paste(var, "2010", sep = "_")
-  var1950 <- paste(var, "1950", sep = "_")
-  vardiff <- paste(var, "diff", sep = "_")
-  # Calculation
-  df2[, vardiff] = df2[, var2010] - df2[, var1950]
-} 
-
-
-
-iv <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
-              log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
-              log_projected_pop_diff, data = df2)
+stargazer(f1_shape2, f1_area2, type = "latex", 
+          title = "Table 2 (columns 3 and 4): First stage panel",
+          column.labels = c("OLS", "OLS"),
+          dep.var.labels = c("Shape, km", "Log area, km"),
+          covariate.labels = c("Log projected historical population", "Potential shape, km"),
+          omit = c("Constant", "id", "year"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", sum(!is.na(temp)), sum(!is.na(temp)))), 
+          out = paste0(path_output, "Table2_Panel_FirstStage(R).tex"))

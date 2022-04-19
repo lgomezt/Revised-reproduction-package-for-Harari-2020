@@ -1,0 +1,21 @@
+Table 2			
+columns 3 and 4: First stage			
+panel			
+		(1)	(2)
+		OLS	OLS
+		Shape	Log area
+VARIABLES	LABELS	km	km
+			
+log_projected_pop	Log projected historical population	-1.354***	0.213*
+		(0.278)	(0.122)
+r1_relev_disconnect_cls_km	Potential shape, km	1.503***	0.185***
+		(0.241)	(0.0495)
+			
+Observations		5,028	5,028
+AP F stat shape		78.36	78.36
+AP F stat area		13.6	13.6
+KP F test stat		15.97	15.97
+City FE		Y	Y
+Year FE		Y	Y
+Robust standard errors in parentheses			
+*** p<0.01, ** p<0.05, * p<0.1			
