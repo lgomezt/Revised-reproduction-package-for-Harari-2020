@@ -74,3 +74,16 @@ between points of 360 meters (one-standar deviation increase), holding constant
 city area, is associated with a 3.5 percent decline in population.
 """
 
+# OLS Estimates
+ols <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+              log_area_polyg_km_diff, data = df2)
+ols2 <- coeftest(ols, vcov. = vcovHC(ols, type = "HC0"), 
+                cluster = id)
+# Interpretation of the results
+"""
+In equilibrium, faster growing cities are cities that grow into more disconnected
+shapes. A 1% increase in population is associated with a deterioration in shape of
+450 meters. Potential channels of this effect are more difficult urban planning or 
+governance, urban growth occurring along transit corridors, and the tendency of
+cities to expand into less favorable terrain.
+"""
