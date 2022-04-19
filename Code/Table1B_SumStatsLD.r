@@ -17,7 +17,7 @@ library(tibble) # Rownames to columns
 library(stargazer) # Export to latex
 
 # Define the paths to import data, call scripts or save outputs 
-path_script <- getActiveDocumentContext()$path
+path_script <- getActiveDocumentContext()$path # Automatich path :D
 path_data <- gsub(x = path_script, 
                   pattern = "Revised reproduction package for Harari, 2020/Code/Table1B_SumStatsLD.r", 
                   replacement = "ReplicationFolder_Main/Data/")
