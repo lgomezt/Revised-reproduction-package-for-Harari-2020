@@ -15,6 +15,7 @@ library(tibble) # Rownames to columns
 library(stargazer) # Export to latex
 library(lmtest) # Cluster standard errors
 library(sandwich) # Robust covariance matrix estimators
+library(AER) # To perform IV estimation
 
 # Define the paths to import data, call scripts or save outputs 
 path_script <- getActiveDocumentContext()$path # Automatich path :D
@@ -81,7 +82,7 @@ predictions. A good explanaiton can be found here:
 https://www.sciencedirect.com/science/article/pii/S0304407615001736#br000005
 """
 
-# First stage for Shape
+# First stage for Shape (diff)
 # Sadly, the econometrics in R are more code intensive. Firstly, we estimate the
 # first stage by OLS. Later (f1_shape2) we correct the standard errors. 
 # With lmtest::coeftest we clustered the errors at city level. With sandwich::coeftest
@@ -89,7 +90,8 @@ https://www.sciencedirect.com/science/article/pii/S0304407615001736#br000005
 
 f1_shape <- lm(disconnect_km_diff ~ r1_relev_disconnect_cls_km_diff + 
                  log_projected_pop_diff, data = df2)
-f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC0"), cluster = id)
+f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC0"), 
+                      cluster = id)
 
 # Note that after correction, the standar errors increase, however, the relevance
 # of each regressor remains. Each instrument is significant at 0.1%
@@ -103,6 +105,35 @@ f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC0"), cluster 
 # second stage, units were sampled randomly from the sampled clusters. She 
 # cluster standard errors by city, since there are cities in the population of 
 # interest beyond those seen in the sample.
+
+# First stage for Area (diff)
+f1_area <- lm(log_area_polyg_km_diff ~ r1_relev_disconnect_cls_km_diff + 
+                log_projected_pop_diff, data = df2)
+f1_area2 <- coeftest(f1_area, vcov. = vcovHC(f1_area, type = "HC0"), 
+                     cluster = id)
+
+# At this moment, there is no package to calculate the Angrist-Pischke or
+# Kleibergen-Paap F-statistics in r
+
+# Export results
+stargazer(f1_shape2, f1_area2, type = "text", title = "Table 2: First stage",
+          column.labels = c("OLS", "OLS"),
+          covariate.labels = c("D Potential shape, km", "D Log projected population"),
+          dep.var.labels = c("Disconnection D2010-1950", "Log area D2010-1950"),
+          omit = c("Constant"), notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", nrow(df2), nrow(df2))), 
+          out = paste0(path_output, "Table2_Cols12_FS(R).txt"))
+
+stargazer(f1_shape2, f1_area2, type = "latex", title = "Table 2: First stage",
+          column.labels = c("OLS", "OLS"),
+          covariate.labels = c("D Potential shape, km", "D Log projected population"),
+          dep.var.labels = c("Disconnection D2010-1950", "Log area D2010-1950"),
+          omit = c("Constant"), notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", nrow(df2), nrow(df2))), 
+          out = paste0(path_output, "Table2_Cols12_FS(R).tex"))
+
+
+
 
 
 
