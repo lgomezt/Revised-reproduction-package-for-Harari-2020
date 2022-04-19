@@ -13,10 +13,11 @@ set matsize 9000
 **********************************************************************************
 ************************************ Paths ***************************************
 **********************************************************************************
+cd "C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\Plan C. Economía"
 
-global resultsfolder 	".\Out\"
-global datafoldernew 	".\Data\"
-global logfolder 		".\Log"
+global resultsfolder 	".\Revised reproduction package for Harari, 2020\Out\"
+global datafoldernew 	".\ReplicationFolder_Main\Data\"
+global logfolder 		".\ReplicationFolder_Main\Log"
 
 log using "${logfolder}\Table4_WagesLD.log", replace 
 
@@ -90,8 +91,8 @@ label var r1_relev_`y'_cls_km_`diff' "D Potential shape, km"
 ******************************** IV and OLS **************************************
 **********************************************************************************
 
-cap erase "$resultsfolder/Table4_Wages.xls"
-cap erase "$resultsfolder/Table4_Wages.txt"
+cap erase "$resultsfolder/Table4_Wages(Stata).xls"
+cap erase "$resultsfolder/Table4_Wages(Stata).txt"
 
 foreach k in per_worker_wage_Md_V0  per_worker_wage_Md_V1   per_worker_wage_Md_V2 {
 
@@ -204,12 +205,12 @@ foreach k in per_worker_wage_Md_V0  per_worker_wage_Md_V1   per_worker_wage_Md_V
 
 	******************************* IV ********************************
 	quie ivreg2 log_`k'_`diff' (`y'_km_`diff' log_area_polyg_km_`diff' = r1_relev_`y'_cls_km_`diff' log_projected_pop_`diff' ) ,  first cluster(id)
-	outreg2 using "$resultsfolder/Table4_Wages.xls" , title(Table 4: Impact of city shape on wages) alpha (0.01,  0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (IV, `districts_obs', `year2'-`year1') addte(AP F stat shape, "`APF_`y'_km_`diff''", AP F stat area, "`APF_log_area_polyg_km_`diff''", KP test stat, "`kptest'", Avg. yearly wage 1992, `mean', Avg. yearly wage 2010, `mean2')  label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff' r1_relev_`y'_cls_km_`diff' log_projected_pop_`diff' ) nor2   `outreg_v'
+	outreg2 using "$resultsfolder/Table4_Wages(Stata).xls" , title(Table 4: Impact of city shape on wages) alpha (0.01,  0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (IV, `districts_obs', `year2'-`year1') addte(AP F stat shape, "`APF_`y'_km_`diff''", AP F stat area, "`APF_log_area_polyg_km_`diff''", KP test stat, "`kptest'", Avg. yearly wage 1992, `mean', Avg. yearly wage 2010, `mean2')  label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff' r1_relev_`y'_cls_km_`diff' log_projected_pop_`diff' ) nor2   `outreg_v'
 
 	******************************* OLS ********************************
 
 	quie reg log_`k'_`diff' `y'_km_`diff' log_area_polyg_km_`diff'  if insample==1, cluster(id)
-	outreg2 using "$resultsfolder/Table4_Wages.xls" , sortvar (`tosort') alpha (0.01 , 0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (OLS,`districts_obs', `year2'-`year1' ) label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff') addte(Avg. yearly wage 1992, `mean', Avg. yearly wage 2010, `mean2')  nor2 `outreg_v'
+	outreg2 using "$resultsfolder/Table4_Wages(Stata).xls" , sortvar (`tosort') alpha (0.01 , 0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (OLS,`districts_obs', `year2'-`year1' ) label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff') addte(Avg. yearly wage 1992, `mean', Avg. yearly wage 2010, `mean2')  nor2 `outreg_v'
 
 }
 

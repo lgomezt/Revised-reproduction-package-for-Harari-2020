@@ -1,15 +1,11 @@
-# Table 4, Impact of city shape on wages 
-
-# In Table 4 reports the IV and OLS relationship between average wages and 
-# city shape. In conclusion, non-compact cities are associated with higher wages.
-
+# Table 5, Impact of city shape on rents
 
 """
-Data are available at the district level but the matching between districts 
-and cities is not one to one. The author uses three samples: 
-- Any city that can be matched (columns 1 and 2); 
-- Cities for which there is a one-to-one mapping with a district (columns 3 and 4); 
-- Top city per district (columns 5 and 6).
+Table 5 reports the same set of specifications for housing rents. The dependent 
+variable is the 2008−2006 difference of the log yearly housing rent per square meter, 
+averaged throughout all urban households in the district, from National Sample 
+Survey data. The evidence presented suggest that lower rents are present in less
+compact cities
 """
 
 # Delete all variables. Is the same as "clear all" in Stata
@@ -30,30 +26,26 @@ library(AER) # To perform IV estimation
 # Define the paths to import data, call scripts or save outputs 
 path_script <- getActiveDocumentContext()$path # Automatich path :D
 path_data <- gsub(x = path_script, 
-                  pattern = "Revised reproduction package for Harari, 2020/Code/Table4_WagesLD.r", 
+                  pattern = "Revised reproduction package for Harari, 2020/Code/Table5_RentsLD.r", 
                   replacement = "ReplicationFolder_Main/Data/")
 path_output <- gsub(x = path_script,
-                    pattern = "Code/Table4_WagesLD.r", 
+                    pattern = "Code/Table5_RentsLD.r", 
                     replacement = "Out/")
 
 # Import CityShape_Main.dta as df
 df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
 
-# The ASI data are available at the district level. Keep relevant observations.
-df2 = df[df["insample_FS_FullPanel"] == 1,]
-
-# There are not information for the wages in 1992, therefore, the author uses
-# the closest year for which they are observed (1990)
-
 # Select relevant variables
-df2 <- df2 %>%
+df2 <- df %>%
   select(id, year, disconnect_km, log_area_polyg_km, r1_relev_disconnect_cls_km,
-         log_projected_pop, per_worker_wage_Md_V0, per_worker_wage_Md_V1,
-         per_worker_wage_Md_V2, log_TOTAL_pop_all)
+         log_projected_pop, rent_1_Mt_v0, rent_1_Mt_v1, rent_1_Mt_v2,
+         per_worker_wage_Md_V0, per_worker_wage_Md_V1, per_worker_wage_Md_V2)
 
 # Create variables in log
-variables <- c("per_worker_wage_Md_V0", "per_worker_wage_Md_V1", 
+variables <- c("rent_1_Mt_v0", "rent_1_Mt_v1", "rent_1_Mt_v2", 
+               "per_worker_wage_Md_V0", "per_worker_wage_Md_V1", 
                "per_worker_wage_Md_V2")
+
 for (var in variables) {
   var_name <- paste("log", var, sep = "_")
   df2[, var_name] <- log(df2[, var])
@@ -65,86 +57,87 @@ df2 <- df2 %>%
               values_from = -all_of(c("id", "year")))
 
 # Generate diff vars
-variables <- c("disconnect_km", "log_projected_pop", "r1_relev_disconnect_cls_km", 
-               "log_area_polyg_km")
+variables <- c("disconnect_km", "log_area_polyg_km", "r1_relev_disconnect_cls_km",
+               "log_projected_pop", "log_rent_1_Mt_v0", "log_rent_1_Mt_v1", "log_rent_1_Mt_v2",
+               "per_worker_wage_Md_V0", "per_worker_wage_Md_V1", "per_worker_wage_Md_V2")
 
 for (var in variables) {
   # Names of the variables
-  var2010 <- paste(var, "2010", sep = "_")
-  var1992 <- paste(var, "1992", sep = "_")
+  var2008 <- paste(var, "2008", sep = "_")
+  var2006 <- paste(var, "2006", sep = "_")
   vardiff <- paste(var, "diff", sep = "_")
   # Calculation
-  df2[, vardiff] = df2[, var2010] - df2[, var1992]
-} 
-
-variables <- c("log_per_worker_wage_Md_V0", "log_per_worker_wage_Md_V1", "log_per_worker_wage_Md_V2")
-
-for (var in variables) {
-  # Names of the variables
-  var2010 <- paste(var, "2010", sep = "_")
-  var1992 <- paste(var, "1992", sep = "_")
-  vardiff <- paste(var, "diff", sep = "_")
-  # Calculation
-  df2[, vardiff] = df2[, var2010] - df2[, var1992]
+  df2[, vardiff] = df2[, var2008] - df2[, var2006]
 } 
 
 # All districts
-wages0 <- ivreg(formula = log_per_worker_wage_Md_V0_diff ~ disconnect_km_diff + 
+rent0 <- ivreg(formula = log_rent_1_Mt_v0_diff ~ disconnect_km_diff + 
                   log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
                   log_projected_pop_diff, data = df2)
-wages02 <- coeftest(wages0, vcov. = vcovHC(wages0, type = "HC1"), 
+rent02 <- coeftest(rent0, vcov. = vcovHC(rent0, type = "HC1"), 
                     cluster = id)
-ols0 <- ivreg(formula = log_per_worker_wage_Md_V0_diff ~ disconnect_km_diff + 
+ols0 <- ivreg(formula = log_rent_1_Mt_v0_diff ~ disconnect_km_diff + 
                 log_area_polyg_km_diff, data = df2)
 ols02 <- coeftest(ols0, vcov. = vcovHC(ols0, type = "HC1"), 
                   cluster = id)
-n0 <- wages0$nobs
+n0 <- rent0$nobs
 
 # Only districts with one city
-wages1 <- ivreg(formula = log_per_worker_wage_Md_V1_diff ~ disconnect_km_diff + 
+rent1 <- ivreg(formula = log_rent_1_Mt_v1_diff ~ disconnect_km_diff + 
                   log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
                   log_projected_pop_diff, data = df2)
-wages12 <- coeftest(wages1, vcov. = vcovHC(wages1, type = "HC1"), 
+rent12 <- coeftest(rent1, vcov. = vcovHC(rent1, type = "HC1"), 
                     cluster = id)
-ols1 <- ivreg(formula = log_per_worker_wage_Md_V1_diff ~ disconnect_km_diff + 
+ols1 <- ivreg(formula = log_rent_1_Mt_v1_diff ~ disconnect_km_diff + 
                 log_area_polyg_km_diff, data = df2)
 ols12 <- coeftest(ols1, vcov. = vcovHC(ols1, type = "HC1"), 
                   cluster = id)
-n1 <- wages1$nobs
+n1 <- rent1$nobs
 
 # Only top city per district
-wages2 <- ivreg(formula = log_per_worker_wage_Md_V2_diff ~ disconnect_km_diff + 
+rent2 <- ivreg(formula = log_rent_1_Mt_v2_diff ~ disconnect_km_diff + 
                   log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
                   log_projected_pop_diff, data = df2)
-wages22 <- coeftest(wages2, vcov. = vcovHC(wages2, type = "HC1"), 
+rent22 <- coeftest(rent2, vcov. = vcovHC(rent2, type = "HC1"), 
                     cluster = id)
-ols2 <- ivreg(formula = log_per_worker_wage_Md_V2_diff ~ disconnect_km_diff + 
+ols2 <- ivreg(formula = log_rent_1_Mt_v2_diff ~ disconnect_km_diff + 
                 log_area_polyg_km_diff, data = df2)
 ols22 <- coeftest(ols2, vcov. = vcovHC(ols2, type = "HC1"), 
                   cluster = id)
-n2 <- wages2$nobs
+n2 <- rent2$nobs
 
 # Export results
-stargazer(wages02, ols02, wages12, ols12, wages22, ols22, type = "text", 
-          title = "Table 4: Impact of city shape on wages",
+stargazer(rent02, ols02, rent12, ols12, rent22, ols22, type = "text", 
+          title = "Table 5: Impact of city shape on rents",
           column.labels = c("IV \\\\ & All districts", "OLS \\\\ & All districts", "IV \\\\ & Only districts with one city", "OLS \\\\ & Only districts with one city", "IV \\\\ & Only top city per district", "OLS \\\\ & Only top city per district"),
           covariate.labels = c("D Shape, km", "D Log area"),
-          dep.var.labels = c("2010-1992", "2010-1992", "2010-1992", "2010-1992", "2010-1992", "2010-1992"),
+          dep.var.labels = c("2008-2006", "2008-2006", "2008-2006", "2008-2006", "2008-2006", "2008-2006"),
           omit = c("Constant"), 
           notes = "Robust standard errors in parentheses",
           add.lines = list(c("Observations", n0, n0, n1, n1, n2, n2),
-                           c("Avg. yearly wage 1992", rep(72, 6)),
-                           c("Avg. yearly wage 2010", 187, 187, 193, 193, 187, 187)), 
-          out = paste0(path_output, "Table4_Wages(R).txt"))
+                           c("Avg. yearly rent per m2 2006", 703, 703, 705, 705, 700, 700)), 
+          out = paste0(path_output, "Table5_Rents(R).txt"))
 
-stargazer(wages02, ols02, wages12, ols12, wages22, ols22, type = "latex", 
-          title = "Table 4: Impact of city shape on wages",
+stargazer(rent02, ols02, rent12, ols12, rent22, ols22, type = "latex", 
+          title = "Table 5: Impact of city shape on rents",
           column.labels = c("IV \\\\ & All districts", "OLS \\\\ & All districts", "IV \\\\ & Only districts with one city", "OLS \\\\ & Only districts with one city", "IV \\\\ & Only top city per district", "OLS \\\\ & Only top city per district"),
           covariate.labels = c("D Shape, km", "D Log area"),
-          dep.var.labels = c("2010-1992", "2010-1992", "2010-1992", "2010-1992", "2010-1992", "2010-1992"),
+          dep.var.labels = c("2008-2006", "2008-2006", "2008-2006", "2008-2006", "2008-2006", "2008-2006"),
           omit = c("Constant"), 
           notes = "Robust standard errors in parentheses",
           add.lines = list(c("Observations", n0, n0, n1, n1, n2, n2),
-                           c("Avg. yearly wage 1992", rep(72, 6)),
-                           c("Avg. yearly wage 2010", 187, 187, 193, 193, 187, 187)), 
-          out = paste0(path_output, "Table4_Wages(R).tex"))
+                           c("Avg. yearly rent per m2 2006", 703, 703, 705, 705, 700, 700)), 
+          out = paste0(path_output, "Table5_Rents(R).tex"))
+
+# Interpretation of results
+"""
+the effect of disconnected shapes on rents is negative in IV and near to zero 
+in OLS. According to the author, the finding of higher wages and lower rents 
+in non-compact cities is consistent with a compensating differential interpretation. 
+
+In the model developed, if compact city shape provides advantages in terms of 
+quality of life or productivity, compact cities will be characterized by higher 
+rents and wages that may be higher or lower depending on whether households or 
+firms value compact shape the most. To the extent that households value city 
+shape more than firms, they will bid wages up in compact cities. 
+"""

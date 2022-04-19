@@ -12,10 +12,11 @@ set matsize 9000
 **********************************************************************************
 ************************************ Paths ***************************************
 **********************************************************************************
+cd "C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\Plan C. Economía"
 
-global resultsfolder 	".\Out\"
-global datafoldernew 	".\Data\"
-global logfolder 		".\Log"
+global resultsfolder 	".\Revised reproduction package for Harari, 2020\Out\"
+global datafoldernew 	".\ReplicationFolder_Main\Data\"
+global logfolder 		".\ReplicationFolder_Main\Log"
 
 log using "${logfolder}\Table5_RentsLD.log", replace 
 
@@ -58,6 +59,7 @@ keep id year `mylist'
 foreach var of varlist  rent_1_Mt_v0 rent_1_Mt_v1 rent_1_Mt_v2 per_worker_wage_Md_V0  per_worker_wage_Md_V1   per_worker_wage_Md_V2{ 
 	gen log_`var' = log(`var') 
 } 
+
 drop per_worker_wage_Md_V0  per_worker_wage_Md_V1   per_worker_wage_Md_V2 
 
 local mylist `y'_km log_area_polyg_km r1_relev_`y'_cls_km  log_projected_pop  rent_1_Mt_v0 rent_1_Mt_v1 rent_1_Mt_v2 log_rent_1_Mt_v0 log_rent_1_Mt_v1 log_rent_1_Mt_v2  ///
@@ -95,8 +97,8 @@ label var r1_relev_`y'_cls_km_`diff' "D Potential shape, km"
 **********************************************************************************
 
 foreach j in Table5_Rents{
-	cap erase "$resultsfolder/`j'.xls"
-	cap erase "$resultsfolder/`j'.txt"
+	cap erase "$resultsfolder/`j'(Stata).xls"
+	cap erase "$resultsfolder/`j'(Stata).txt"
 }
 
 
@@ -222,7 +224,7 @@ foreach k in rent_1_Mt_v0 rent_1_Mt_v1 rent_1_Mt_v2 {
 	*******************   IV REGRESSION FOR DISPLAY *******************
 	*******************************************************************
 	quie ivreg2 log_`k'_`diff' (`y'_km_`diff' log_area_polyg_km_`diff' = r1_relev_`y'_cls_km_`diff' log_projected_pop_`diff' ) ,  first cluster(id)
-	outreg2 using "$resultsfolder/`tablename'.xls" ,  title(`tabletitle') alpha (0.01,  0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (IV, `districts_obs', `year2'-`year1') addte(AP F stat shape, "`APF_`y'_km_`diff''", AP F stat area, "`APF_log_area_polyg_km_`diff''", KP test stat, "`kptest'", Avg. yearly rent per m2 2006, "`mean'", Willingness to pay, "`wtp'", WTP SE, "`wtp_se'", WTP p-value,"`wtp_p'" )  label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff' r1_relev_`y'_cls_km_`diff' log_projected_pop_`diff' ) nor2   `outreg_v'
+	outreg2 using "$resultsfolder/`tablename'(Stata).xls" ,  title(`tabletitle') alpha (0.01,  0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (IV, `districts_obs', `year2'-`year1') addte(AP F stat shape, "`APF_`y'_km_`diff''", AP F stat area, "`APF_log_area_polyg_km_`diff''", KP test stat, "`kptest'", Avg. yearly rent per m2 2006, "`mean'", Willingness to pay, "`wtp'", WTP SE, "`wtp_se'", WTP p-value,"`wtp_p'" )  label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff' r1_relev_`y'_cls_km_`diff' log_projected_pop_`diff' ) nor2   `outreg_v'
 
 		
 	di "********************************* OLS *******************************"
@@ -323,7 +325,7 @@ foreach k in rent_1_Mt_v0 rent_1_Mt_v1 rent_1_Mt_v2 {
 	*******************************************************************
 	
 	quie reg log_`k'_`diff' `y'_km_`diff' log_area_polyg_km_`diff'  if insample==1, cluster(id)
-	outreg2 using "$resultsfolder/`tablename'.xls" , sortvar (`tosort') alpha (0.01 , 0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (OLS,`districts_obs', `year2'-`year1' ) label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff') addte(Avg. yearly rent per m2 2006, "`mean'") nor2 append
+	outreg2 using "$resultsfolder/`tablename'(Stata).xls" , sortvar (`tosort') alpha (0.01 , 0.05 , 0.1 ,  0.15) symbol (*** , ** , *, +) nocons ctitle (OLS,`districts_obs', `year2'-`year1' ) label(insert) keep (`y'_km_`diff' log_area_polyg_km_`diff') addte(Avg. yearly rent per m2 2006, "`mean'") nor2 append
 
 	}
 
