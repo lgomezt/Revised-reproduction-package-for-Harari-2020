@@ -48,7 +48,6 @@ variables <- c("area_polyg_km", "disconnect_N_km", "disconnect_km",
                "log_projected_pop", "r1_relev_disconnect_cls_km", 
                "log_area_polyg_km", "log_TOTAL_pop_all", "dens_core_all", 
                "TOTAL_pop_all")
-var = variables[1]
 
 for (var in variables) {
   # Names of the variables
@@ -103,10 +102,10 @@ city area, is associated with a 3.5 percent decline in population.
 """
 
 # OLS Estimates
-ols <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
-              log_area_polyg_km_diff, data = df2)
+ols <- reg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+             log_area_polyg_km_diff, data = df2)
 ols2 <- coeftest(ols, vcov. = vcovHC(ols, type = "HC0"), 
-                cluster = id)
+                 cluster = id)
 
 # Interpretation of the results
 """

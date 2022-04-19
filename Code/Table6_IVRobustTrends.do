@@ -12,10 +12,11 @@ set matsize 9000
 **********************************************************************************
 ************************************ Paths ***************************************
 **********************************************************************************
+cd "C:\Users\User\OneDrive - Universidad de los Andes\12. Último semestre\Urban economics\Final project\Plan C. Economía"
 
-global resultsfolder 	".\Out\"
-global datafoldernew 	".\Data\"
-global logfolder 		".\Log"
+global resultsfolder 	".\Revised reproduction package for Harari, 2020\Out\"
+global datafoldernew 	".\ReplicationFolder_Main\Data\"
+global logfolder 		".\ReplicationFolder_Main\Log"
 
 log using "${logfolder}\Table6_IVRobustTrends.log", replace 
 
@@ -117,7 +118,7 @@ foreach control in `controlsmain'  {
 	qui local kptest = round(`kptest',.01)
 	local kptest = substr("`kptest'",1,strpos("`kptest'",".")+2)
 	
-	outreg2 using "$resultsfolder/Table6_IVRobustTrends.xls", nor2 nocons  title(Table 6: IV impact of city shape on population, robustness to confounding trends) addtext( F stat shape,"`APF_d_km'", F stat area, "`APF_log_area_polyg_km'" , KP test stat, "`kptest'" , Control, `control_label')  ctitle (IV, Log Pop D`year2'-`year1')  label(insert) `outreg2'
+	outreg2 using "$resultsfolder/Table6_IVRobustTrends(Stata).xls", nor2 nocons  title(Table 6: IV impact of city shape on population, robustness to confounding trends) addtext( F stat shape,"`APF_d_km'", F stat area, "`APF_log_area_polyg_km'" , KP test stat, "`kptest'" , Control, `control_label')  ctitle (IV, Log Pop D`year2'-`year1')  label(insert) `outreg2'
 
 }
 	
