@@ -117,6 +117,7 @@ governance, urban growth occurring along transit corridors, and the tendency of
 cities to expand into less favorable terrain.
 """
 
+# Export results
 stargazer(iv2, ols2, type = "text", 
           title = "Table 3: Impact of city shape on population",
           column.labels = c("IV", "OLS"),
@@ -126,7 +127,6 @@ stargazer(iv2, ols2, type = "text",
           notes = "Robust standard errors in parentheses",
           add.lines = list(c("Observations", ols$n, ols$n)), 
           out = paste0(path_output, "Table3_ShapeOnPopulation(R).txt"))
-
 
 stargazer(iv2, ols2, type = "latex", 
           title = "Table 3: Impact of city shape on population",

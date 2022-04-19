@@ -49,7 +49,6 @@ variables <- c("area_polyg_km", "disconnect_N_km", "disconnect_km",
                "log_projected_pop", "r1_relev_disconnect_cls_km", 
                "log_area_polyg_km", "log_TOTAL_pop_all", "dens_core_all", 
                "TOTAL_pop_all")
-var = variables[1]
 
 for (var in variables) {
   # Names of the variables
