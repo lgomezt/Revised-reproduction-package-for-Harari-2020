@@ -76,7 +76,11 @@ stats3 <- stats3 %>%
                names_to = c("year", "stat")) %>%
   pivot_wider(names_from = "year")
 
+# Round decimals and put every number pretty
 stats3[, 3:5] <- apply(stats3[, 3:5], 2, function(x) round(as.numeric(x), 2))
 stats3[7:8, 3:5] <- apply(stats3[7:8, 3:5], 2, function(x) as.integer(x))
 names(stats3)[1:2] <- c("Variables", "Statistic")
-stats3
+
+# Produce Latex output
+stargazer(stats3, summary = F, rownames = F, type = "latex",
+          out = paste0(path_output, "Table1B(R).tex"))
