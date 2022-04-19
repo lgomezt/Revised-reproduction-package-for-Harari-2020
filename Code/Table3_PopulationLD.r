@@ -33,7 +33,44 @@ df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
 # Filter for the 351 cities sampled by the author for their main analysis.
 df2 = df[df["insample_IV_5010"] == 1,]
 
+# Reshape the data: long to wide
+df2 <- df2 %>%
+  select(id, year, area_polyg_km, disconnect_N_km, disconnect_km,
+         log_projected_pop, r1_relev_disconnect_cls_km, log_area_polyg_km, 
+         log_TOTAL_pop_all, dens_core_all, TOTAL_pop_all) %>%
+  pivot_wider(id_cols = id, names_from = year, 
+              values_from = -all_of(c("id", "year")))
 
+# Generate log difference vars
+
+# List of variables to calculate the difference
+variables <- c("area_polyg_km", "disconnect_N_km", "disconnect_km",
+               "log_projected_pop", "r1_relev_disconnect_cls_km", 
+               "log_area_polyg_km", "log_TOTAL_pop_all", "dens_core_all", 
+               "TOTAL_pop_all")
+var = variables[1]
+
+for (var in variables) {
+  # Names of the variables
+  var2010 <- paste(var, "2010", sep = "_")
+  var1950 <- paste(var, "1950", sep = "_")
+  vardiff <- paste(var, "diff", sep = "_")
+  # Calculation
+  df2[, vardiff] = df2[, var2010] - df2[, var1950]
+} 
+
+# IV Estimates
 iv <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
               log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
               log_projected_pop_diff, data = df2)
+iv2 <- coeftest(iv, vcov. = vcovHC(iv, type = "HC0"), 
+                      cluster = id)
+
+# Interpretation of the results
+"""
+The betas of the IV regression show that as city becomes less compact (holding
+area constant), the population growth declines. An increase in the average distance 
+between points of 360 meters (one-standar deviation increase), holding constant 
+city area, is associated with a 3.5 percent decline in population.
+"""
+
