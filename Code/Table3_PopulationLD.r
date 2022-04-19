@@ -59,6 +59,34 @@ for (var in variables) {
   df2[, vardiff] = df2[, var2010] - df2[, var1950]
 } 
 
+# Why the author are using IV? What are the sources of endogeneity?
+"""
+The main concern in estimating the effect of shape of a city in the size of its
+population is the endogeneity of urban geometry. The observed spatial structure 
+of a city at a given point in time is the result of the interaction of exogenous 
+factors, such as geography, and factors endogenous to population, such as the 
+city’s growth rate and policy choices. For example, master plans, land use 
+regulations and investments in road infrastructure affects city shape. This 
+induces a simultaneous correlation between city shape and city size. 
+
+The sign of the OLS bias will be ambiguous, as the selection effects induced by 
+the endogenous determinants of city shape operate in different directions. For
+example, areas with stronger state capacity tend to have better urban planning 
+and enforcement of master plans, and may be more compact. At the same time, cities 
+with stronger institutional capacity and well-functioning local governments also 
+tend to be more successful and faster-growing cities. This may result in fast-growing 
+cities having better shapes, for reasons unrelated to the value of compactness.
+This would tend to generate a negative correlation between non-compact shape and 
+population.
+
+On the other hand, population growth may make cities less compact. As cities grow, 
+they tend to deteriorate in shape. A city experiencing faster population growth 
+may be harder to manage from an urban planning perspective, resulting in more 
+chaotic development. Large cities may have more fragmented governance as they 
+stretch over multiple administrative units. These effects would tend to generate a 
+positive correlation between non-compact shape and population.
+"""
+
 # IV Estimates
 iv <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
               log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
