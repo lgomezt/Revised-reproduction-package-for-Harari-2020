@@ -82,8 +82,28 @@ https://www.sciencedirect.com/science/article/pii/S0304407615001736#br000005
 """
 
 # First stage for Shape
+# Sadly, the econometrics in R are more code intensive. Firstly, we estimate the
+# first stage by OLS. Later (f1_shape2) we correct the standard errors. 
+# With lmtest::coeftest we clustered the errors at city level. With sandwich::coeftest
+# we run robust standard errors. 
+
 f1_shape <- lm(disconnect_km_diff ~ r1_relev_disconnect_cls_km_diff + 
                  log_projected_pop_diff, data = df2)
 f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC0"), cluster = id)
+
+# Note that after correction, the standar errors increase, however, the relevance
+# of each regressor remains. Each instrument is significant at 0.1%
+
+# Here, the reason why the author uses robust and non-standard errors is because 
+# she seeks to correct for heteroskedasticity. Also, she clustered the errors at
+# city level is to adjust for unobserved components within cities that affect the
+# outcome are correlated. More concretly, here clustering is due a design issue 
+# because sampling follows a two stage process where in the first stage, a subset 
+# of clusters were sampled randomly from a population of clusters, and in the 
+# second stage, units were sampled randomly from the sampled clusters. She 
+# cluster standard errors by city, since there are cities in the population of 
+# interest beyond those seen in the sample.
+
+
 
 
