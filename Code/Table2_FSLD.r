@@ -1,6 +1,8 @@
 # This script replicate the Table 2. It presents results from estimating the 
-# two first-stage equations, relating city shape and area to the geography-based 
+# first-stage equation, relating city shape and area to the geography-based 
 # instrument and to projected historical population.
+
+# THIS SCRIPT IS FOR THE FIRST STAGE OF THE LONG DIFFERENCE (COLUMNS 1 & 2)
 
 # Delete all variables. Is the same as "clear all" in Stata
 rm(list = ls())
@@ -60,7 +62,6 @@ for (var in variables) {
 
 # Regression to get first stage. F and KP stat
 
-# 1. Comment --------------------------------------------------------------
 """
 The author is going to estimate the effect of the shape of the city on the 
 growth of the population. However, due to the endogeneity of the shape of the 
@@ -131,10 +132,6 @@ stargazer(f1_shape2, f1_area2, type = "latex", title = "Table 2: First stage",
           omit = c("Constant"), notes = "Robust standard errors in parentheses",
           add.lines = list(c("Observations", nrow(df2), nrow(df2))), 
           out = paste0(path_output, "Table2_Cols12_FS(R).tex"))
-
-
-
-
 
 
 

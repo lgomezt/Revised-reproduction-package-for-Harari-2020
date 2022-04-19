@@ -76,7 +76,6 @@ label var log_area_polyg_km_`diff' "D Log area"
 label var log_projected_pop_`diff' "D Log projected population"
 label var r1_relev_`y'_cls_km_`diff' "D Potential shape, km"
 
-
 **********************************************************************************
 ********************************* First Stage ************************************
 **********************************************************************************
