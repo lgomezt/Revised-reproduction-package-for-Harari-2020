@@ -1,0 +1,969 @@
+---
+title: "Reproduction package for Harari, 2020"
+author: "Lucas Gómez Tobón"
+date: "27/5/2022"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style>
+body {text-align: justify}
+</style>
+
+```{r setup, include=FALSE} 
+library(knitr)
+# Quitar los warnings de todo el documento
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+El presente documeto busca consolidar el paquete de reproducción de la investigación "Cities in Bad Shape. Urban Geometry in India" (Harari, 2020) presentado en el AER.
+
+## Resumen 
+¿Cuál es el impacto de la forma de las ciudades sobre el crecimiento de la población, los salarios y la renta? Este artículo explota información satelital para estudiar la evolución en el crecimiento de las fronteras de las ciudades. También construye un instrumento para la geometría de las ciudades a partir de las barreras geográficas que se enfrentan las ciudades al crecer para responder esta pregunta. En resumen, Harari encuentra que las ciudades más compactas tienden a tener un crecimiento poblacional, unos salarios y una renta mayor.
+
+## Estrategia de identificación
+Los economistas urbanos usualmente suponen en sus modelos que las ciudades son circulares o radialmente simétricas (Anas, Arnott, y Small, 1998), sin embargo, Harari (2020) señala que la forma que tienen las ciudades, más concretamente, lo compacta que es una ciudad, es un gran determinante para la calidad de vida que tienen los habitantes del espacio.
+
+No obstante, estimar el impacto de la forma de las ciudades sobre las variables asociadas a la calidad de vida resulta en un reto empírico por la falta de datos confiables sobre cómo evolucionan las fronteras de las ciudades y por la endogeneidad asociada a la forma de las ciudades, que en sí mismo, es un resultado de equilibrio.
+
+Para lograr sobreponerse a estas dificultades se realizan dos cosas: la primera es hacer uso de imágenes satelitales para construir un panel que muestra la evolución de la frontera de diferentes ciudades de la India para el período de 1950 a 2011. La segunda es su estrategia de identificación en donde usa información de la topografía, como terreno empinado o cuerpos de agua, para instrumentar la variable explicativa de qué tan compacta es la ciudad. 
+
+La ecuación reducida de interés se presenta a continuación. $N$ corresponde a la población total y es la principal variable de interés (aunque el autor también estudiará el efecto sobre diferentes bienes públicos y tiempo de desplazamiento promedio), la forma de la ciudad $c$ en el año $t$ se denota como $S_{c,t}$, en donde un mayor valor numérico de esta corresponde a una ciudad menos compacta, y $area_{c,t}$ sería el área de la huella urbana:
+
+$$\log(N_{c,t})=a\cdot S_{c,t} + b\cdot area_{c,t}+\eta_{c,t}$$
+Sin embargo, sabemos que esta ecuación por medio de MCO no nos arrojaría resultados insesgados pues estructura espacial observada de una ciudad en un momento dado es el resultado de la interacción de factores exógenos, como la geografía, y factores endógenos a la población, como la tasa de crecimiento de la ciudad y las decisiones políticas. Por tal motivo tenemos un problema de simultaneidad entre la forma y el tamaño de la ciudad. En general el signo del sesgo MCO será ambiguo ya que los efectos inducidos por los determinantes endógenos de la forma de la ciudad operan en diferentes direcciones.
+
+Para solucionar el problema el autor plantea un enfoque de variables instrumentales que explota la variación tanto temporal como transversal en la forma de la ciudad. Intuitivamente, la identificación se basa en cambios de forma plausiblemente exógenos que experimenta una ciudad a lo largo del tiempo como resultado de encontrar obstáculos topográficos a lo largo de su camino de expansión. Dicho instrumento varía a nivel de ciudad-año, incorporando el hecho de que las ciudades chocan con diferentes conjuntos de obstáculos topográficos en diferentes etapas de su crecimiento.
+
+Ahora bien, es importante mencionar que se instrumenta la forma real de la ciudad en un momento dado a partir de la forma potencial, la cual es un pronóstico generado por el autor a partir de las limitaciones geográficas a las que se enfrenta la ciudad en cada fase de su crecimiento previsto. En concreto, se considera la mayor parcela contigua de terreno urbanizable, es decir, el terreno que no esté ocupado por una masa de agua ni por un terreno escarpado, dentro de un radio previsto determinado alrededor de cada ciudad ($r_{c,t}$). A dicha parcela contigua de suelo urbanizable se le llama como "huella potencial" de la ciudad el cual sería el instrumento utilizado. Lo que da variación temporal a este instrumento es el hecho de que el radio previsto varía con el tiempo, y se expande con el tiempo basándose en un modelo mecánico de expansión de la ciudad. El uso de la predicción es importante, ya que el crecimiento real sería endógeno.
+
+El radio proyectado $r_{c,t}$ se obtiene postulando un modelo mecánico para la expansión de la ciudad en el espacio, que se basa en una proyección de las tasas históricas (1871-1951) de crecimiento de la población de cada ciudad. En concreto, $r_{c,t}$ responde a la siguiente pregunta: si la población de la ciudad siguiera creciendo como lo hizo entre 1871 y 1951 y la densidad de población se mantuviera constante en su nivel de 1951, ¿cuál sería la superficie ocupada por la ciudad en el año $t$?
+
+Matemáticamente $\hat{r_{c,t}}$ se calcula como:
+$$\hat{r_{c,t}} = \sqrt{\frac{\hat{area_{c,t}}}{\pi}}$$
+En donde $\hat{area_{c,t}}$ se estima a partir de la regresión:
+$$\log(area_{c,t})=\alpha\cdot\log(\hat{pob_{c,t}})+\beta\cdot\log(\frac{pop_{c,1951}}{area_{c,1951}})+\gamma_t+\varepsilon_{c,t}$$
+El principal resultado corresponde a que una mejora de una desviación estándar en la compacticidad de la ciudad resulta en una reducción de la distancia media dentro de la ciudad de 360 metros y a su vez se asocia con un 3 por ciento de aumento de la población. A su vez, el autor también encuentra que las ciudades compactas se caracterizan por tener salarios reales más bajos. Además, proporciono un cálculo aproximado de la disposición implícita de los hogares a pagar por la forma compacta equivalente al 5% de sus ingresos por una mejora de una desviación estándar en la compacidad. En la misma línea, también calcula el impacto implícito de la forma de la ciudad en la productividad de las empresas y no encuentra efectos significativos. 
+
+Finalmente, el autor muestra que sus resultados son robustos a diferentes especificaciones para calcular la “huella potencial”, diferentes métricas de qué tan compacta es la ciudad y a la exclusión de ciudades con características particulares como por ejemplo contar con una frontera costera muy grande. 
+
+## Nivel de reproductibilidad 
+El trabajo ofrece todos los códigos necesarios para limpiar los datos, crear las figuras, tablas y resultados y además estos funcionan correctamente. Por tal razón cumplen el criterio CRA. Gran parte de los datos no están disponibles por motivos de confidencialidad, sin embargo, el autor presenta datos más agregados construidos a partir de los datos faltantes y con estos se puede reproducir la totalidad del documento. Los criterios anteriores, sumado a que se pueden correr los resultados en menos de 1 hora (descontando tiempo de corrida o costo computacional), permiten argumentar que el nivel de reproducibilidad es mayor a L5. Dado que además se incluyen los códigos con los que se limpian las bases crudas, aunque no estén disponibles, defino un nivel de reproductibilidad de L7
+
+|      **Disponibilidad de material y reproductibilidad**      	              ||
+|:------------------------------------------------------------:	|:-----------:	|:------------:	|
+|                                                              	| **Parcial** 	| **Completo** 	|
+|                    Código para el análisis                   	|      X      	|       X      	|
+|                    Datos para el análisis                    	|      X      	|       X      	|
+| Computacionalmente reproducible a partir de datos procesados 	|      X      	|       X      	|
+|                    Código para la limpieza                   	|      X      	|              	|
+|                         Datos Crudos                         	|      X      	|              	|
+|   Computacionalmente reproducible a partir de datos crudos   	|             	|              	|
+|      **Nivel de reproductibilidad: L7 **      	              ||
+
+## Traducción del Código
+La investigación fue originalmente desarrollada en Stata. Por tal motivo, esta sección busca replicar los resultados utilizando el software libre R. Los códigos pueden ser encontrados en el siguiente repositorio de [GitHub](https://github.com/lgomezt/Revised-reproduction-package-for-Harari-2020). A continuación se mostrarán los principales resultados.
+
+### Estadísticas descriptivas
+#### Figura 1
+En primer lugar se va a replicar la tabla que acompaña la Figura 1. El código para replicar la Figura 1 no fue provisto por los autores.
+
+```{r}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Filter the data to select only Kolkata (id = 457) and Bangalore (id = 150)
+# for the year 2005
+df <- df %>%
+  filter(year == 2005) %>%
+  filter(id == 457 | id == 150) %>%
+  select(spin_km, range_km, remoteness_km, disconnect_km, spin_N_km,
+         range_N_km, remoteness_N_km, disconnect_N_km, area_polyg_km, id)
+
+# Create new variable called NoN_EACradius that represents the radious of a circle
+# If Area = pi * radio^2 => radio = (Area/pi)^0.5
+df$NoN_EACradius = sqrt(df$area_polyg_km/pi) # pi~ 3.141593 
+df$Norm_EACradius = df$NoN_EACradius # 
+
+# The autor puts the suffix NoN or Norm in the name of the variables to declare
+# that it is Not Normalized (NoN) or it is Normalized (Norm). Therefore, she 
+# changes the name of some variables:
+names(df) <- c("NoN_spin", "NoN_range", "NoN_remoteness", "NoN_disconnect",
+               "Norm_spin", "Norm_range", "Norm_remoteness", "Norm_disconnect",
+               "area_polyg_km", "id", "NoN_EACradius", "Norm_EACradius")
+
+# Drop area_polyg_km
+df <- select(df, -area_polyg_km)
+
+# Reshape from wide to long
+df <- df %>%
+  pivot_longer(-id, names_to = c("type", "Shape metric"), names_sep = "_") %>%
+  pivot_wider(id_cols = c("id", "Shape metric"), names_from = "type")
+
+# Put the city name and drop id
+df <- df %>%
+  mutate(city = ifelse(id == 150, "B", "K")) %>%
+  select(-id)
+
+# Reshape from long to wide
+df <- df %>%
+  pivot_wider(id_cols = "Shape metric", names_from = "city",
+              values_from = c("NoN", "Norm"))
+
+# Create the variable NoN_rescale_B as Norm_B * K_area 
+K_area = df$NoN_K[df$`Shape metric` == "EACradius"]
+df$NoN_rescale_B = df$Norm_B * K_area
+
+# Create the variables Adj_Diff and NoAdj_Diff 
+df$Adj_Diff = df$NoN_K - df$NoN_rescale_B
+df$NoAdj_Diff = df$NoN_K - df$NoN_B
+
+# Drop EACradius metric
+df <- df[df$`Shape metric` != "EACradius",]
+
+# Change the names of the shape metrics and the columns to export the file
+df <- select(df, c(`Shape metric`, NoN_K, Norm_K, NoN_rescale_B, Norm_B))
+df$`Shape metric` <- c("3. Spin, km2", "4. Range, km", "2. Remoteness, km", 
+                       "1. Disconnection, km")
+names(df) <-  c("Shape metric", "NonNormMetric_Kolkata", "Normalized_Kolkata",
+                "NonNormMetric_Bangalore", "Normalized_Bangalore")
+df <- arrange(df, `Shape metric`)
+
+kable(df, caption = "Figure 1. Shape metrics: An example", digits = 2)
+```
+#### Estadísticas descriptivas. Panel A
+Ahora vamos a replicar las estadísticas descriptivas de la investigación. Comenzaremos con el Panel A donde se expondrán las propiedades espaciales de las ciudades de la India para todo el panel de datos, es decir para los años, 1950, 1992-2010. Es importante mencionar la *forma* se mide como la distancia promedio dentro de la ciudad, en kilómetros, con valores más altos del índice que denotan formas menos compactas.
+
+```{r}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Panel A. 1950, 1992–2010
+# We show the statistic for the 351 cities sampled by the author for their
+# main analysis.
+df2 = df[df["insample_IV_5010"] == 1,]
+
+# We create a function to count the number of rows that are not NA
+not.na = function(x, na.rm = T) {sum(!is.na(x), na.rm)}
+
+# Calculate summary statistics for area_polyg_km, disconnect_km, 
+# r1_relev_disconnect_cls_km
+stats <- df2 %>%
+  select(area_polyg_km, disconnect_km, r1_relev_disconnect_cls_km) %>%
+  summarise_all(.funs = c("not.na", "mean", "median", "sd", "min", "max"), na.rm = T) %>%
+  pivot_longer(everything()) %>% 
+  extract(name, into = c("variable", "stats"), "(.*)_([^_]+)$") %>%
+  pivot_wider(names_from = "variable")
+
+# Calculate summary statistics for TOTAL_pop_all.
+# We only take in account those cities that are in our sample. Therefore, we drop
+# the cities that doesn't have information for log_area_polyg_km, id, year, 
+# disconnect_km
+
+stats2 <- df2 %>%
+  drop_na(log_TOTAL_pop_all, log_area_polyg_km, id, year, disconnect_km) %>%
+  select(TOTAL_pop_all) %>%
+  summarise_all(.funs = c("not.na", "mean", "median", "sd", "min", "max"), na.rm = T)
+
+# Append stats and stats2 and prettify to create the latex output
+stats2$variable = "City population"
+stats <- data.frame(t(stats))
+stats <- rownames_to_column(stats, "variable")
+stats[1, 1] <- "variable"
+names(stats) <- stats[1,]
+stats <- stats[-1,]
+stats3 <- rbind(stats, stats2)
+
+# Rename columns and variables
+names(stats3) <- c("Variables", "Observations", "Mean", "Median", "SD", "Min", "Max")
+stats3$Variables <- c("Area, km2", "Shape, km", "Potential shape, km", 
+                      "City population")
+
+# Round decimals and put every number pretty
+stats3$Observations <- as.integer(stats3$Observations)
+stats3[1:3, c("Mean", "Median", "SD", "Min", "Max")] <- apply(
+  stats3[1:3, c("Mean", "Median", "SD", "Min", "Max")], 2, 
+      function(x) round(as.numeric(x), 2))
+stats3[4, c("Mean", "Median", "SD", "Min", "Max")] <- apply(
+  stats3[4, c("Mean", "Median", "SD", "Min", "Max")], 2, 
+  function(x) round(as.numeric(x), 0))
+stats3[1, 7] <- as.integer(stats3[1, 7])
+
+stats3 <- apply(stats3, 2, function(x) prettyNum(x, big.mark = ","))
+kable(stats3, caption = "Table 1. Descriptive statistics. Panel A. 1950, 1992 - 2010", digits = 2)
+```
+#### Estadísticas descriptivas. Panel B
+Esta sección replica la Tabla 1, Panel B. Esta informa los promedios de las variables para las 351 ciudades en la muestra de estimación principal para los años 1950, 2010 y para la diferencia larga 2010-1950. Para la población de la ciudad, 1950 y 2010 corresponden a los años censales de 1951 y 2011, respectivamente.
+
+```{r}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Panel B. 
+# We show the statistic for the 351 cities sampled by the author for their
+# main analysis.
+df2 = df[df["insample_IV_5010"] == 1,]
+
+# We are interested in show de difference between 2010 and 1950. Therefore, we
+# are going to concentrate in the mean of each year
+stats <- df2 %>%
+  group_by(year) %>%
+  summarise(across(c(area_polyg_km, disconnect_km, r1_relev_disconnect_cls_km, 
+                     TOTAL_pop_all), list("mean" = ~mean(.x, na.rm = T),
+                                          "sd" = ~sd(.x, na.rm = T)))) %>%
+  filter(year %in% c(1950, 2010)) %>%
+  pivot_longer(-year) %>% 
+  extract(name, into = c("variable", "stats"), "(.*)_([^_]+)$") %>%
+  pivot_wider(names_from = "variable")
+
+# Now, we are going to calculate the difference between 2010 and 1950
+stats2 <- df2 %>%
+  group_by(id) %>%
+  filter(year %in% c(1950, 2010)) %>%
+  summarise(across(c(area_polyg_km, disconnect_km, r1_relev_disconnect_cls_km, 
+                     TOTAL_pop_all), list("diff" = ~diff(.x, na.rm = T)))) %>%
+  summarise(across(c(area_polyg_km_diff, disconnect_km_diff, r1_relev_disconnect_cls_km_diff, 
+                     TOTAL_pop_all_diff), list("mean" = ~mean(.x, na.rm = T),
+                                          "sd" = ~sd(.x, na.rm = T)))) %>%
+  pivot_longer(everything()) %>% 
+  extract(name, into = c("variable", "stats"), "(.*)_([^_]+)$") %>%
+  pivot_wider(names_from = "variable")
+
+# Append two tables 
+names(stats2) <- names(stats)[-1]
+stats2$year <- "2010-1950"
+stats3 <- rbind(stats, stats2)
+
+# Done! Let's arrange the format and export to Latex
+stats3 <- data.frame(t(stats3))
+stats3 <- rownames_to_column(stats3, "variable")
+stats3[1, 1] <- "variable"
+names(stats3) <- paste(stats3[1,], stats3[2,], sep = "_")
+stats3 <- stats3[-c(1:2),]
+stats3$variable_stats <- c("Area, km2", "Shape, km", "Potential shape, km", 
+                           "City population")
+stats3 <- stats3 %>%
+  pivot_longer(cols = -variable_stats, names_sep = "_", 
+               names_to = c("year", "stat")) %>%
+  pivot_wider(names_from = "year")
+
+# Round decimals and put every number pretty
+stats3[, 3:5] <- apply(stats3[, 3:5], 2, function(x) round(as.numeric(x), 2))
+stats3[7:8, 3:5] <- apply(stats3[7:8, 3:5], 2, function(x) as.integer(x))
+names(stats3)[1:2] <- c("Variables", "Statistic")
+
+stats3 <- apply(stats3, 2, function(x) prettyNum(x, big.mark = ","))
+kable(stats3, caption = "Table 1. Descriptive statistics. Panel B. Long difference", digits = 2)
+```
+
+### Principales resultados
+#### Tabla 2. Primera etapa de IV.
+Recordemos que el objetivo del autor es estimar el efecto de la forma de la ciudad sobre el crecimiento de la población. Sin embargo, debido a la endogeneidad de la forma de la ciudad, v a ainstrumentar su regresos con algunos datos topográficos.
+
+Como IV tiene dos supuestos principales para ser utilizado (restricción de exclusión y condición de relevancia), esta parte del trabajo está enfocada en mostrar la relevancia de los instrumentos. La mayoría de las pruebas se basab en la importancia global de la primera etapa de IV (haciendo uso del estadístico F) y la significancia individual de los instrumentos (pruba t).
+
+La autora calcula el estadístico F de Angrist-Pischke y Kleibergen-Paap el cual se utiliza para el caso de varias variables endógenas (en nuestro caso área y forma) haciendo una reformulación del problema en donde se reemplazan las variables endógenas a partir de su forma reducida en una sola ecuación. Una buena explicación de este estimador se puede encontrar [aquí](https://www.sciencedirect.com/science/article/pii/S0304407615001736#br000005)
+
+Esta tabla tiene dos partes. La primera corresponde a la de la diferencia extensa entre 1950 a 2010 y la segunda el panel con todos los años. Comenzaremos con la diferencia extensa.
+
+```{r, results = 'asis'}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+library(lmtest) # Cluster standard errors
+library(sandwich) # Robust covariance matrix estimators
+library(AER) # To perform IV estimation
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Filter for the 351 cities sampled by the author for their main analysis.
+df2 = df[df["insample_IV_5010"] == 1,]
+
+# Reshape the data: long to wide
+df2 <- df2 %>%
+  select(id, year, area_polyg_km, disconnect_N_km, disconnect_km,
+         log_projected_pop, r1_relev_disconnect_cls_km, log_area_polyg_km, 
+         log_TOTAL_pop_all, dens_core_all, TOTAL_pop_all) %>%
+  pivot_wider(id_cols = id, names_from = year, 
+              values_from = -all_of(c("id", "year")))
+
+# Generate log difference vars
+
+# List of variables to calculate the difference
+variables <- c("area_polyg_km", "disconnect_N_km", "disconnect_km",
+               "log_projected_pop", "r1_relev_disconnect_cls_km", 
+               "log_area_polyg_km", "log_TOTAL_pop_all", "dens_core_all", 
+               "TOTAL_pop_all")
+
+for (var in variables) {
+  # Names of the variables
+  var2010 <- paste(var, "2010", sep = "_")
+  var1950 <- paste(var, "1950", sep = "_")
+  vardiff <- paste(var, "diff", sep = "_")
+  # Calculation
+  df2[, vardiff] = df2[, var2010] - df2[, var1950]
+} 
+
+# Regression to get first stage. F and KP stat
+# First stage for Shape (diff)
+# Sadly, the econometrics in R are more code intensive. Firstly, we estimate the
+# first stage by OLS. Later (f1_shape2) we correct the standard errors. 
+# With lmtest::coeftest we clustered the errors at city level. With sandwich::coeftest
+# we run robust standard errors. 
+
+f1_shape <- lm(disconnect_km_diff ~ r1_relev_disconnect_cls_km_diff + 
+                 log_projected_pop_diff, data = df2)
+f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC0"), 
+                      cluster = id)
+
+# First stage for Area (diff)
+f1_area <- lm(log_area_polyg_km_diff ~ r1_relev_disconnect_cls_km_diff + 
+                log_projected_pop_diff, data = df2)
+f1_area2 <- coeftest(f1_area, vcov. = vcovHC(f1_area, type = "HC0"), 
+                     cluster = id)
+
+# At this moment, there is no package to calculate the Angrist-Pischke or
+# Kleibergen-Paap F-statistics in r
+
+# Export results
+stargazer(f1_shape2, f1_area2, type = "html", title = "Table 2: First stage",
+          column.labels = c("OLS", "OLS"),
+          covariate.labels = c("D Potential shape, km", "D Log projected population"),
+          dep.var.labels = c("Disconnection D2010-1950", "Log area D2010-1950"),
+          omit = c("Constant"), notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", nrow(df2), nrow(df2))))
+```
+
+Luego de correr el código note que los autores usan errores robustos y además los clusterizan a nivel de ciudad. Esta corrección aumenta el tamaño de los errores estándar pero aún así estos siguen siendo significativos.
+
+Utilizar errores robustos busca corregir el problema de heteroscedasticidad de una varianza del error no constante para las diferentes observaciones. Del mismo modo, ella agrupó los errores a nivel de ciudad para ajustar los componentes no observados dentro de las ciudades que afectan el resultado. Más concretamente, aquí el agrupamiento se debe a un problema de diseño porque el muestreo sigue un proceso de dos etapas donde en la primera etapa, un subconjunto de conglomerados se muestrearon aleatoriamente de una población de conglomerados, y en la segunda etapa, las unidades se muestrearon aleatoriamente de los conglomerados muestreados. Agrupar los errores estándar por ciudad, se debe a que hay ciudades en la población de interés más allá de las vistas en la muestra.
+
+Ahora continuaremos con la segunda sección de la Tabla 2 correspondiente al panel de todos los años.
+
+```{r, results = 'asis'}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+library(lmtest) # Cluster standard errors
+library(sandwich) # Robust covariance matrix estimators
+library(AER) # To perform IV estimation
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Filter for the 351 cities sampled by the author for their main analysis.
+df2 = df[df["insample_IV_5010"] == 1,]
+
+# First stage for Shape (Panel)
+temp = df2[,"disconnect_km"]*2
+f1_shape <- lm(disconnect_km ~ factor(id) + factor(year) + 
+                 log_projected_pop + r1_relev_disconnect_cls_km, data = df2, 
+               subset = !is.na(temp))
+f1_shape2 <- coeftest(f1_shape, vcov. = vcovHC(f1_shape, type = "HC1"), 
+                      cluster = id)
+
+# First stage for Area (Panel)
+f1_area <- lm(log_area_polyg_km ~ factor(id) + factor(year) + 
+                log_projected_pop + r1_relev_disconnect_cls_km, data = df2, 
+              subset = !is.na(temp))
+f1_area2 <- coeftest(f1_area, vcov. = vcovHC(f1_area, type = "HC1"), 
+                     cluster = id)
+
+stargazer(f1_shape2, f1_area2, type = "html", 
+          title = "Table 2 (columns 3 and 4): First stage panel",
+          column.labels = c("OLS", "OLS"),
+          dep.var.labels = c("Shape, km", "Log area, km"),
+          covariate.labels = c("Log projected historical population", "Potential shape, km"),
+          omit = c("Constant", "id", "year"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", sum(!is.na(temp)), sum(!is.na(temp)))))
+```
+
+Este ejercicio se encuentra por fuera de la sección de Pruebas de Robustez porque el resultado es de interés para la investigación. Este muestra patrones de consumo de suelo de las ciudades indias en función de su geografía. Curiosamente, el área de la huella real parece verse afectada positivamente por la forma de la huella potencial (columnas 2 y 4). Si bien esto refleja en parte la correlación mecánica entre la forma y el área de la huella, también sugiere que las configuraciones topográficas que hacen que las ciudades sean menos compactas también pueden hacer que se expandan más en el espacio. Esto podría deberse a que las restricciones topográficas inducen a un patrón de desarrollo que consume más terreno, o podría reflejar una dificultad inherente en la planificación para un uso parsimonioso del suelo en contextos restringidos. Esto también aclara que las ciudades “restringidas” en este contexto no deben considerarse como escasos de tierra en términos absolutos, sino más bien como ciudades donde el crecimiento tiene que ocurrir alrededor de obstáculos topográficos.
+
+#### Resultados sobre población
+Ahora se replicará la Tabla 3 la cual muestra el impacto de la forma de la ciudad en la población. Esta corresponde a la segunda etapa de IV. El autor estima el impacto mediante MCO y IV para los datos de diferencia extensa.
+
+Antes de proceder, nos detendremos a pensar ¿Por qué el autor está haciendo uso de IV? ¿Cuáles son las potenciales causas de endogeneidad?
+
+La principal preocupación al estimar el efecto de la forma de una ciudad sobre el tamaño de su población es la endogeneidad de la geometría urbana. La estructura espacial observada de una ciudad en un momento determinado es el resultado de la interacción de factores exógenos, como la geografía, y factores endógenos a la población, como la tasa de crecimiento de la ciudad y las decisiones políticas. Por ejemplo, los planes maestros, los reglamentos de uso del suelo y las inversiones en infraestructura vial afectan la forma de la ciudad. Esto induce una correlación simultánea entre la forma y el tamaño de la ciudad.
+
+El signo del sesgo de MCO es ambiguo ya que los efectos de selección inducidos por los determinantes endógenos de la forma de la ciudad operan en diferentes direcciones. Por ejemplo, las áreas con mayor capacidad estatal tienden a tener una mejor planificación urbana y cumplimiento de planes maestros y tal vez son más compactas. Al mismo tiempo, las ciudades con mayor capacidad institucional y gobiernos locales que funcionan bien también tienden a ser ciudades más exitosas y de más rápido crecimiento. Esto puede dar como resultado que las ciudades de rápido crecimiento tengan mejores formas, por razones no relacionadas con el valor de la compacidad. Esto tendería a generar una correlación negativa entre forma no compacta y población.
+
+Por otro lado, el crecimiento de la población puede hacer que las ciudades sean menos compactas. A medida que las ciudades crecen, su forma tiende a deteriorarse. Una ciudad que experimenta un crecimiento demográfico más rápido puede ser más difícil de administrar desde una perspectiva de planificación urbana, lo que resulta en un desarrollo más caótico. Las grandes ciudades pueden tener una gobernanza más fragmentada, ya que abarcan múltiples unidades administrativas. Estos efectos tenderían a generar una correlación positiva entre forma no compacta y población.
+
+Por consiguiente, sabemos que la endogeneidad puede ser resuelta si se encuentra una fuente de variación exógena con la cual instrumentemos. Por ende, la autora instrumenta la forma real de la ciudad en un momento dado con la forma potencial que puede tener la ciudad. La forma potencial se estima utilizando las restricciones geográficas que enfrenta cada ciudad en esa etapa de su crecimiento previsto.
+
+Más concretamente, se utilizó la mayor parcela contigua de suelo urbanizable. Es un terreno no ocupado por un cuerpo de agua ni por un terreno escarpado, dentro de un radio dado previsto alrededor de cada ciudad. Este parche contiguo se denomina 'huella potencial'.
+
+Se calcula el indicador de forma de la huella potencial y lo utiliza como instrumento para la forma de la huella urbana real. Lo que le da variación en el tiempo a este instrumento es el hecho de que el radio predicho varía en el tiempo y se expande con el tiempo según un modelo mecánico para la expansión de la ciudad.
+
+La razón por la que usa el crecimiento previsto y no el real se debe a la endogeneidad. Sin embargo, la autora no informa los resultados de sus predicciones en el artículo.
+
+```{r, results = 'asis'}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+library(lmtest) # Cluster standard errors
+library(sandwich) # Robust covariance matrix estimators
+library(AER) # To perform IV estimation
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Filter for the 351 cities sampled by the author for their main analysis.
+df2 = df[df["insample_IV_5010"] == 1,]
+
+# Reshape the data: long to wide
+df2 <- df2 %>%
+  select(id, year, area_polyg_km, disconnect_N_km, disconnect_km,
+         log_projected_pop, r1_relev_disconnect_cls_km, log_area_polyg_km, 
+         log_TOTAL_pop_all, dens_core_all, TOTAL_pop_all) %>%
+  pivot_wider(id_cols = id, names_from = year, 
+              values_from = -all_of(c("id", "year")))
+
+# Generate log difference vars
+
+# List of variables to calculate the difference
+variables <- c("area_polyg_km", "disconnect_N_km", "disconnect_km",
+               "log_projected_pop", "r1_relev_disconnect_cls_km", 
+               "log_area_polyg_km", "log_TOTAL_pop_all", "dens_core_all", 
+               "TOTAL_pop_all")
+
+for (var in variables) {
+  # Names of the variables
+  var2010 <- paste(var, "2010", sep = "_")
+  var1950 <- paste(var, "1950", sep = "_")
+  vardiff <- paste(var, "diff", sep = "_")
+  # Calculation
+  df2[, vardiff] = df2[, var2010] - df2[, var1950]
+} 
+
+# IV Estimates
+iv <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + log_projected_pop_diff, data = df2)
+iv2 <- coeftest(iv, vcov. = vcovHC(iv, type = "HC0"), cluster = id)
+
+# OLS Estimates
+ols <- lm(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + log_area_polyg_km_diff, data = df2)
+ols2 <- coeftest(ols, vcov. = vcovHC(ols, type = "HC0"), cluster = id)
+
+# Explanation of instruments
+
+# Export results
+stargazer(iv2, ols2, type = "html", 
+          title = "Table 3: Impact of city shape on population",
+          column.labels = c("IV", "OLS"),
+          covariate.labels = c("D Shape, km", "D Log area"),
+          dep.var.labels = c("Log Pop D2010-1950", "Log Pop D2010-1950"),
+          omit = c("Constant"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", ols$n, ols$n)))
+```
+Los betas de la regresión IV muestran que a medida que la ciudad se vuelve menos compacta (manteniendo el área constante), el crecimiento de la población disminuye. Un aumento en la distancia promedio entre puntos de 360 metros (aumento de una desviación estándar), manteniendo constante el área de la ciudad, se asocia con una disminución del 3.5 por ciento en la población.
+
+En equilibrio, las ciudades de más rápido crecimiento son ciudades que crecen en formas más desconectadas. Un aumento del 1% en la población está asociado con un deterioro en la forma de 450 metros. Los canales potenciales de este efecto son una planificación o gobernanza urbana más difícil, el crecimiento urbano que ocurre a lo largo de los corredores de tránsito y la tendencia de las ciudades a expandirse hacia terrenos menos favorables.
+
+#### Efecto de la forma de las ciudades en los salarios.
+```{r, results = "asis"}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+library(lmtest) # Cluster standard errors
+library(sandwich) # Robust covariance matrix estimators
+library(AER) # To perform IV estimation
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# The ASI data are available at the district level. Keep relevant observations.
+df2 = df[df["insample_FS_FullPanel"] == 1,]
+
+# There are not information for the wages in 1992, therefore, the author uses
+# the closest year for which they are observed (1990)
+
+# Select relevant variables
+df2 <- df2 %>%
+  select(id, year, disconnect_km, log_area_polyg_km, r1_relev_disconnect_cls_km,
+         log_projected_pop, per_worker_wage_Md_V0, per_worker_wage_Md_V1,
+         per_worker_wage_Md_V2, log_TOTAL_pop_all)
+
+# Create variables in log
+variables <- c("per_worker_wage_Md_V0", "per_worker_wage_Md_V1", 
+               "per_worker_wage_Md_V2")
+for (var in variables) {
+  var_name <- paste("log", var, sep = "_")
+  df2[, var_name] <- log(df2[, var])
+}
+
+# Reshape the data: long to wide
+df2 <- df2 %>%
+  pivot_wider(id_cols = id, names_from = year, 
+              values_from = -all_of(c("id", "year")))
+
+# Generate diff vars
+variables <- c("disconnect_km", "log_projected_pop", "r1_relev_disconnect_cls_km", 
+               "log_area_polyg_km")
+
+for (var in variables) {
+  # Names of the variables
+  var2010 <- paste(var, "2010", sep = "_")
+  var1992 <- paste(var, "1992", sep = "_")
+  vardiff <- paste(var, "diff", sep = "_")
+  # Calculation
+  df2[, vardiff] = df2[, var2010] - df2[, var1992]
+} 
+
+variables <- c("log_per_worker_wage_Md_V0", "log_per_worker_wage_Md_V1", "log_per_worker_wage_Md_V2")
+
+for (var in variables) {
+  # Names of the variables
+  var2010 <- paste(var, "2010", sep = "_")
+  var1992 <- paste(var, "1992", sep = "_")
+  vardiff <- paste(var, "diff", sep = "_")
+  # Calculation
+  df2[, vardiff] = df2[, var2010] - df2[, var1992]
+} 
+
+# All districts
+wages0 <- ivreg(formula = log_per_worker_wage_Md_V0_diff ~ disconnect_km_diff + 
+                  log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                  log_projected_pop_diff, data = df2)
+wages02 <- coeftest(wages0, vcov. = vcovHC(wages0, type = "HC1"), 
+                    cluster = id)
+ols0 <- ivreg(formula = log_per_worker_wage_Md_V0_diff ~ disconnect_km_diff + 
+                log_area_polyg_km_diff, data = df2)
+ols02 <- coeftest(ols0, vcov. = vcovHC(ols0, type = "HC1"), 
+                  cluster = id)
+n0 <- wages0$nobs
+
+# Only districts with one city
+wages1 <- ivreg(formula = log_per_worker_wage_Md_V1_diff ~ disconnect_km_diff + 
+                  log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                  log_projected_pop_diff, data = df2)
+wages12 <- coeftest(wages1, vcov. = vcovHC(wages1, type = "HC1"), 
+                    cluster = id)
+ols1 <- ivreg(formula = log_per_worker_wage_Md_V1_diff ~ disconnect_km_diff + 
+                log_area_polyg_km_diff, data = df2)
+ols12 <- coeftest(ols1, vcov. = vcovHC(ols1, type = "HC1"), 
+                  cluster = id)
+n1 <- wages1$nobs
+
+# Only top city per district
+wages2 <- ivreg(formula = log_per_worker_wage_Md_V2_diff ~ disconnect_km_diff + 
+                  log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                  log_projected_pop_diff, data = df2)
+wages22 <- coeftest(wages2, vcov. = vcovHC(wages2, type = "HC1"), 
+                    cluster = id)
+ols2 <- ivreg(formula = log_per_worker_wage_Md_V2_diff ~ disconnect_km_diff + 
+                log_area_polyg_km_diff, data = df2)
+ols22 <- coeftest(ols2, vcov. = vcovHC(ols2, type = "HC1"), 
+                  cluster = id)
+n2 <- wages2$nobs
+
+# Export results
+stargazer(wages02, ols02, wages12, ols12, wages22, ols22, type = "html", 
+          title = "Table 4: Impact of city shape on wages",
+          column.labels = c("IV \\\\ & All districts", "OLS \\\\ & All districts", "IV \\\\ & Only districts with one city", "OLS \\\\ & Only districts with one city", "IV \\\\ & Only top city per district", "OLS \\\\ & Only top city per district"),
+          covariate.labels = c("D Shape, km", "D Log area"),
+          dep.var.labels = c("2010-1992", "2010-1992", "2010-1992", "2010-1992", "2010-1992", "2010-1992"),
+          omit = c("Constant"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", n0, n0, n1, n1, n2, n2),
+                           c("Avg. yearly wage 1992", rep(72, 6)),
+                           c("Avg. yearly wage 2010", 187, 187, 193, 193, 187, 187)))
+```
+#### Efecto de la forma de las ciudades en las rentas.
+```{r, results = "asis"}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+library(lmtest) # Cluster standard errors
+library(sandwich) # Robust covariance matrix estimators
+library(AER) # To perform IV estimation
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Select relevant variables
+df2 <- df %>%
+  select(id, year, disconnect_km, log_area_polyg_km, r1_relev_disconnect_cls_km,
+         log_projected_pop, rent_1_Mt_v0, rent_1_Mt_v1, rent_1_Mt_v2,
+         per_worker_wage_Md_V0, per_worker_wage_Md_V1, per_worker_wage_Md_V2)
+
+# Create variables in log
+variables <- c("rent_1_Mt_v0", "rent_1_Mt_v1", "rent_1_Mt_v2", 
+               "per_worker_wage_Md_V0", "per_worker_wage_Md_V1", 
+               "per_worker_wage_Md_V2")
+
+for (var in variables) {
+  var_name <- paste("log", var, sep = "_")
+  df2[, var_name] <- log(df2[, var])
+}
+
+# Reshape the data: long to wide
+df2 <- df2 %>%
+  pivot_wider(id_cols = id, names_from = year, 
+              values_from = -all_of(c("id", "year")))
+
+# Generate diff vars
+variables <- c("disconnect_km", "log_area_polyg_km", "r1_relev_disconnect_cls_km",
+               "log_projected_pop", "log_rent_1_Mt_v0", "log_rent_1_Mt_v1", "log_rent_1_Mt_v2",
+               "per_worker_wage_Md_V0", "per_worker_wage_Md_V1", "per_worker_wage_Md_V2")
+
+for (var in variables) {
+  # Names of the variables
+  var2008 <- paste(var, "2008", sep = "_")
+  var2006 <- paste(var, "2006", sep = "_")
+  vardiff <- paste(var, "diff", sep = "_")
+  # Calculation
+  df2[, vardiff] = df2[, var2008] - df2[, var2006]
+} 
+
+# All districts
+rent0 <- ivreg(formula = log_rent_1_Mt_v0_diff ~ disconnect_km_diff + 
+                  log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                  log_projected_pop_diff, data = df2)
+rent02 <- coeftest(rent0, vcov. = vcovHC(rent0, type = "HC1"), 
+                    cluster = id)
+ols0 <- ivreg(formula = log_rent_1_Mt_v0_diff ~ disconnect_km_diff + 
+                log_area_polyg_km_diff, data = df2)
+ols02 <- coeftest(ols0, vcov. = vcovHC(ols0, type = "HC1"), 
+                  cluster = id)
+n0 <- rent0$nobs
+
+# Only districts with one city
+rent1 <- ivreg(formula = log_rent_1_Mt_v1_diff ~ disconnect_km_diff + 
+                  log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                  log_projected_pop_diff, data = df2)
+rent12 <- coeftest(rent1, vcov. = vcovHC(rent1, type = "HC1"), 
+                    cluster = id)
+ols1 <- ivreg(formula = log_rent_1_Mt_v1_diff ~ disconnect_km_diff + 
+                log_area_polyg_km_diff, data = df2)
+ols12 <- coeftest(ols1, vcov. = vcovHC(ols1, type = "HC1"), 
+                  cluster = id)
+n1 <- rent1$nobs
+
+# Only top city per district
+rent2 <- ivreg(formula = log_rent_1_Mt_v2_diff ~ disconnect_km_diff + 
+                  log_area_polyg_km_diff, instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                  log_projected_pop_diff, data = df2)
+rent22 <- coeftest(rent2, vcov. = vcovHC(rent2, type = "HC1"), 
+                    cluster = id)
+ols2 <- ivreg(formula = log_rent_1_Mt_v2_diff ~ disconnect_km_diff + 
+                log_area_polyg_km_diff, data = df2)
+ols22 <- coeftest(ols2, vcov. = vcovHC(ols2, type = "HC1"), 
+                  cluster = id)
+n2 <- rent2$nobs
+
+# Export results
+stargazer(rent02, ols02, rent12, ols12, rent22, ols22, type = "html", 
+          title = "Table 5: Impact of city shape on rents",
+          column.labels = c("IV \\\\ & All districts", "OLS \\\\ & All districts", "IV \\\\ & Only districts with one city", "OLS \\\\ & Only districts with one city", "IV \\\\ & Only top city per district", "OLS \\\\ & Only top city per district"),
+          covariate.labels = c("D Shape, km", "D Log area"),
+          dep.var.labels = c("2008-2006", "2008-2006", "2008-2006", "2008-2006", "2008-2006", "2008-2006"),
+          omit = c("Constant"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", n0, n0, n1, n1, n2, n2),
+                           c("Avg. yearly rent per m2 2006", 703, 703, 705, 705, 700, 700)))
+```
+El efecto de las formas desconectadas sobre las rentas es negativo en IV y cercano a cero en MCO. Según el autor, el hallazgo de salarios más altos y rentas más bajas en ciudades no compactas es consistente con una interpretación diferencial compensatoria.
+
+En el modelo desarrollado, si la forma de ciudad compacta proporciona ventajas en términos de calidad de vida o productividad, las ciudades compactas se caracterizarán por rentas y salarios más altos que pueden ser más altos o más bajos dependiendo de si los hogares o las empresas valoran más la forma compacta. En la medida en que los hogares valoren más la forma de la ciudad que las empresas, harán que los salarios aumenten en las ciudades compactas.
+
+### Pruebas de robustez
+La Tabla 6 muestra que las estimaciones IV para el impacto de la forma de la ciudad en la población son robustas al controlar diversas características. Ella informa la misma especificación IV que en la Tabla 3, columna 1, aumentada con controles geográficos invariantes en el tiempo. Todas las estimaciones puntuales son muy similares a la línea de base.
+
+Antes, hablamos sobre los supuestos necesarios para realizar una estimación IV. Uno de esos supuestos es la restricción de exclusión. Eso significa que el instrumento Z afecta la variable de resultado Y solo a través de X (Z no tiene una influencia directa en Y).
+
+En este caso, la restricción de exclusión para el instrumento de conformación requiere que la forma potencial solo afecte los resultados de interés a través de las restricciones que plantea a la forma urbana. Una de las principales amenazas de identificación es que el instrumento puede estar correlacionado con características geográficas. Por ejemplo, las costas y las montañas también pueden hacer que las ciudades sean intrínsecamente más o menos atractivas para los hogares y/o las empresas.
+
+Estos efectos directos de la geografía podrían sesgar los resultados del VI en diferentes direcciones. Si el instrumento recogiera el efecto de las costas y estas fueran equipamientos paisajísticos, los efectos estimados del mal estado sobre la población estarían sesgados hacia valores positivos. Por el contrario, si la forma potencial fuera menos compacta en áreas con un lecho rocoso particularmente profundo, los impactos de la forma de IV en la población podrían estar sesgados hacia valores más negativos, ya que estarían mediados por costos de construcción más altos en esas ciudades.
+
+```{r, results = "asis"}
+# Delete all variables. Is the same as "clear all" in Stata
+rm(list = ls())
+
+# Load libraries
+library(haven) # To load .dta files in R
+library(rstudioapi) # To get the directory of this script
+library(dplyr) # To manipulate dataframes
+library(tidyr) # To reshape dataframes
+library(writexl) # To export dataframes to Excel
+library(tibble) # Rownames to columns
+library(stargazer) # Export to latex
+library(lmtest) # Cluster standard errors
+library(sandwich) # Robust covariance matrix estimators
+library(AER) # To perform IV estimation
+
+# Define the paths to import data, call scripts or save outputs 
+path_script <- getActiveDocumentContext()$path # Automatic path :D
+path_data <- gsub(x = path_script, 
+                  pattern = "Entrega 4.Rmd", 
+                  replacement = "Data/")
+path_output <- gsub(x = path_script,
+                    pattern = "Entrega 4.Rmd", 
+                    replacement = "Out/")
+
+# Import CityShape_Main.dta as df
+df <- read_dta(file = paste0(path_data, "CityShape_Main.dta"))
+
+# Filter for the 351 cities sampled by the author for their main analysis.
+df2 = df[df["insample_IV_5010"] == 1,]
+
+# Create the variable of elevation 100 m
+df2[, "elevation"] = df2[, "elevation_m"]/100
+
+# Reshape the data: long to wide
+df2 <- df2 %>%
+  pivot_wider(id_cols = id, names_from = year, 
+              values_from = -all_of(c("id", "year")))
+
+# Generate diff vars
+variables <- names(select(head(df), contains("_")))
+
+for (var in variables) {
+  # Names of the variables
+  var2010 <- paste(var, "2010", sep = "_")
+  var1950 <- paste(var, "1950", sep = "_")
+  vardiff <- paste(var, "diff", sep = "_")
+  # Calculation
+  df2[, vardiff] = df2[, var2010] - df2[, var1950]
+} 
+
+# Estimates
+# Elevation
+elevation <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+              log_area_polyg_km_diff + control, 
+            instruments = ~ r1_relev_disconnect_cls_km_diff + 
+              log_projected_pop_diff + control, 
+            data = rename(df2, "control" = "elevation_1950"))
+elevation2 <- coeftest(elevation, vcov. = vcovHC(elevation, type = "HC1"), 
+                cluster = id)
+
+# Distance from coast
+coast_dist_km <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+                     log_area_polyg_km_diff + control, 
+                   instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                     log_projected_pop_diff + control, 
+                   data = rename(df2, "control" = "coast_dist_km_1950"))
+coast_dist_km2 <- coeftest(coast_dist_km, vcov. = vcovHC(coast_dist_km, type = "HC1"), 
+                       cluster = id)
+
+# Distance from river/lake
+dist_riverorlake <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+                         log_area_polyg_km_diff + control, 
+                       instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                         log_projected_pop_diff + control, 
+                       data = rename(df2, "control" = "dist_riverorlake_1950"))
+dist_riverorlake2 <- coeftest(dist_riverorlake, vcov. = vcovHC(dist_riverorlake, type = "HC1"), 
+                           cluster = id)
+
+# Distance from mineral deposit
+distance_mineral_km <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+                            log_area_polyg_km_diff + control, 
+                          instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                            log_projected_pop_diff + control, 
+                          data = rename(df2, "control" = "distance_mineral_km_1950"))
+distance_mineral_km2 <- coeftest(distance_mineral_km, vcov. = vcovHC(distance_mineral_km, type = "HC1"), 
+                              cluster = id)
+
+# Ruggedness
+ROUGH <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+                            log_area_polyg_km_diff + control, 
+                          instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                            log_projected_pop_diff + control, 
+                          data = rename(df2, "control" = "ROUGH_1950"))
+ROUGH2 <- coeftest(dist_riverorlake, vcov. = vcovHC(ROUGH, type = "HC1"), 
+                              cluster = id)
+
+# Bedrock depth
+bedrockdepth <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+                            log_area_polyg_km_diff + control, 
+                          instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                            log_projected_pop_diff + control, 
+                          data = rename(df2, "control" = "bedrockdepth_1950"))
+bedrockdepth2 <- coeftest(bedrockdepth, vcov. = vcovHC(bedrockdepth, type = "HC1"), 
+                              cluster = id)
+
+# Crop suitability
+average_suit <- ivreg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+                            log_area_polyg_km_diff + control, 
+                          instruments = ~ r1_relev_disconnect_cls_km_diff + 
+                            log_projected_pop_diff + control, 
+                          data = rename(df2, "control" = "average_suit_1950"))
+average_suit2 <- coeftest(average_suit, vcov. = vcovHC(average_suit, type = "HC1"), 
+                              cluster = id)
+
+# Export results
+stargazer(elevation2, coast_dist_km2, dist_riverorlake2, distance_mineral_km2, ROUGH2, bedrockdepth2, average_suit2, 
+          type = "html", 
+          title = "Table 6: IV impact of city shape on population robustness to confounding trends",
+          covariate.labels = c("D Shape, km", "D Log area", "Control"),
+          column.labels = rep("IV", 7),
+          dep.var.labels = c("Log Pop D2010-1950"),
+          omit = c("Constant"), 
+          notes = "Robust standard errors in parentheses",
+          add.lines = list(c("Observations", rep(351, 7)),
+                           c("Control", "Elevation 100 m", "Distance from the coast", "Distance from nearest river or lake", "Distance from nearest mineral deposit", "Ruggedness", "Bedrock depth", "Crop suitability")), align = T)
+```
+
+## Referencias
+- Anas, Alex, Richard Arnott, and Kenneth A. Small. 1998. “Urban Spatial Structure.” Journal of Economic Literature 36 (3): 1426–64. 
+- Harari, M. (2020). Cities in bad shape: Urban geometry in India. American Economic Review, 110(8), 2377–2421. https://doi.org/10.1257/aer.20171673
+- McKinsey Global Institute. 2010. “India’s Urban Awakening: Building Inclusive Cities, Sustaining Economic Growth.” https://www.mckinsey.com/featured-insights/urbanization/urban-awakeningin-india 
+- United Nations (UN). 2014. “World Urbanization Prospects: The 2014 Revision Highlights.” Statistical Papers-United Nations (Ser. A), Population and Vital Statistics Report. https://doi.org/10.18356/527e5125–en.
+
+
+
+
+
+
+

@@ -102,7 +102,7 @@ city area, is associated with a 3.5 percent decline in population.
 """
 
 # OLS Estimates
-ols <- reg(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
+ols <- lm(formula = log_TOTAL_pop_all_diff ~ disconnect_km_diff + 
              log_area_polyg_km_diff, data = df2)
 ols2 <- coeftest(ols, vcov. = vcovHC(ols, type = "HC0"), 
                  cluster = id)

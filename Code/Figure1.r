@@ -12,7 +12,7 @@ library(tidyr) # To reshape dataframes
 library(writexl) # To export dataframes to Excel
 
 # Define the paths to import data, call scripts or save outputs 
-path_script <- getActiveDocumentContext()$path # Automatich path :D
+path_script <- getActiveDocumentContext()$path # Automatic path :D
 path_data <- gsub(x = path_script, 
                   pattern = "Revised reproduction package for Harari, 2020/Code/Figure1.r", 
                   replacement = "ReplicationFolder_Main/Data/")
